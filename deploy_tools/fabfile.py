@@ -105,7 +105,7 @@ def _set_nginx_gunicron(source_folder, site_name):
         .format(source_folder, host=site_name))
 
     # 激活这个文件配置的虚拟主机
-    run('sudo ln -s ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
+    run('sudo ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
 
     # 编写 Upstart 脚本
     run('sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf | sudo tee /etc/init/gunicorn-{host}'
