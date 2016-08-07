@@ -46,13 +46,12 @@ def _get_latest_source(source_folder):
     # 我们捕获 git log 命令的输出，获取本地仓库中当前提交的哈希值，这么做的结果是，服务器中代码将和本地检出的代码版本一致
 
     current_commit = local("git log -n 1 --format=%H", capture=True)
-    print("Current_commit 的结果是: {}".format(current_commit))
     # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
     run("cd {} && git reset --hard {}".format(source_folder, current_commit))
 
 
 def _update_settings(source_folder, site_name):
-    settings_path = source_folder + "/superlists/settings.py"
+    settings_path = source_folder + "/todo_app/settings.py"
     # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     # 这里使用 sed 调整 ALLOWED_HOSTS 的值，使用正则表达式匹配正确的代码行
