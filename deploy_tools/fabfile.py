@@ -82,7 +82,7 @@ def _update_virtualenv(source_folder):
 
 def _update_static_files(source_folder):
     # 如果需要执行 Django 的 manage.py 命令，就要指定虚拟环境中二进制文件夹，确保使用的是虚拟环境中的 Django 版本，而不是系统中的版本
-    run("cd {} && ../virtualenv/bin/python3 manage.py collectstatic --noinput".format(source_folder + "/todo_app/"))
+    run("cd {} && ../../virtualenv/bin/python3 manage.py collectstatic --noinput".format(source_folder + "/todo_app/"))
 
 
 def _update_database(source_folder):
