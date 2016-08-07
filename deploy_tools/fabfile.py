@@ -15,7 +15,7 @@ REPO_URL = "https://github.com/L1nwatch/superlists_for_pythonweb.git"
 
 def deploy():
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
-    site_folder = "/home/{}/superlists/{}".format(env.user, env.host)
+    site_folder = "/home/{}/sites/{}".format(env.user, env.host)
     source_folder = site_folder + "/source"
 
     _create_directory_structure_if_necessary(site_folder)
@@ -101,7 +101,7 @@ def _set_nginx_gunicron(source_folder, site_name):
     # 然后使用管道操作（|）把文本流传给一个有 root 权限的用户处理（sudo），把传入的文本流写入一个文件
     # 即 sites-available 文件夹中的一个虚拟主机配置文件。
     run(
-        'cd {} && sed "s/todo_app/{host}/g" deploy_tools/nginx.template.conf | sudo tee /etc/nginx/sites-available/{host}'
+        'cd {} && sed "s/SITENAME/{host}/g" deploy_tools/nginx.template.conf | sudo tee /etc/nginx/sites-available/{host}'
         .format(source_folder, host=site_name))
 
     # 激活这个文件配置的虚拟主机
