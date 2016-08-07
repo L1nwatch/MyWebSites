@@ -10,7 +10,7 @@ from fabric.api import env, local, run
 __author__ = '__L1n__w@tch'
 
 # 要把常量 REPO_URL 的值改成代码分享网站中你仓库的 URL
-REPO_URL = "https://github.com/L1nwatch/PythonWeb.git"
+REPO_URL = "https://github.com/L1nwatch/superlists_for_pythonweb.git"
 
 
 def deploy():
