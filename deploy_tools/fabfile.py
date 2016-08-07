@@ -111,7 +111,7 @@ def _set_nginx_gunicron(source_folder, site_name):
     # 编写 Upstart 脚本
     run('cd {}'
         ' && sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
-        ' | sudo tee /etc/init/gunicorn-{host}'
+        ' | sudo tee /etc/init/gunicorn-{host}.conf'
         .format(source_folder, host=site_name))
 
     # 最后，启动这两个服务
