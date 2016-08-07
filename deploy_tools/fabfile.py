@@ -51,7 +51,7 @@ def _get_latest_source(source_folder):
 
 
 def _update_settings(source_folder, site_name):
-    settings_path = source_folder + "/todo_app/settings.py"
+    settings_path = source_folder + "/todo_app/todo_app/settings.py"
     # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     # 这里使用 sed 调整 ALLOWED_HOSTS 的值，使用正则表达式匹配正确的代码行
