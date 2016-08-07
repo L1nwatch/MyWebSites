@@ -15,7 +15,7 @@ REPO_URL = "https://github.com/L1nwatch/PythonWeb.git"
 
 def deploy():
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
-    site_folder = "/home/{}/sites/{}".format(env.user, env.host)
+    site_folder = "/home/{}/superlists/{}".format(env.user, env.host)
     source_folder = site_folder + "/source"
 
     _create_directory_structure_if_necessary(site_folder)
