@@ -44,9 +44,9 @@ def _get_latest_source(source_folder):
         run("git clone {} {}".format(REPO_URL, source_folder))
     # Fabric 中的 local 函数在本地电脑中执行命令，这个函数其实是对 subprocess.Popen 的再包装。
     # 我们捕获 git log 命令的输出，获取本地仓库中当前提交的哈希值，这么做的结果是，服务器中代码将和本地检出的代码版本一致
-    print("Test1")
+
     current_commit = local("git log -n 1 --format=%H", capture=True)
-    print("Test2")
+    print("Current_commit 的结果是: {}".format(current_commit))
     # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
     run("cd {} && git reset --hard {}".format(source_folder, current_commit))
 
