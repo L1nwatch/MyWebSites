@@ -56,7 +56,6 @@ def _update_settings(source_folder, site_name):
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     # 这里使用 sed 调整 ALLOWED_HOSTS 的值，使用正则表达式匹配正确的代码行
     sed(settings_path, "ALLOWED_HOSTS = .+$", 'ALLOWED_HOSTS = ["{}"]'.format(site_name))
-    print("Set2 成功")
     secret_key_file = source_folder + "/todo_app/todo_app/secret_key.py"
     # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。
     # 如果还没有密钥，这段代码会生成一个新密钥，然后写入密钥文件。有密钥后，每次部署都要使用相同的密钥。
@@ -78,7 +77,7 @@ def _update_virtualenv(source_folder):
     if not exists(virtualenv_folder + "/bin/pip"):
         run("virtualenv --python=python3 {}".format(virtualenv_folder))
     # 然后和之前一样，执行 pip install -r 命令
-    run("{}/bin/pip install -r {}/requirements.txt".format(virtualenv_folder, source_folder))
+    run("{}/bin/pip install -r {}/virtualenv/requirements.txt".format(virtualenv_folder, source_folder))
 
 
 def _update_static_files(source_folder):
