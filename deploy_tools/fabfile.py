@@ -99,14 +99,14 @@ def _set_nginx_gunicron(site_name):
     # 这里，使用 s/replaceme/withthis/g 句法把字符串 SITENAME 替换成网站的地址。
     # 然后使用管道操作（|）把文本流传给一个有 root 权限的用户处理（sudo），把传入的文本流写入一个文件
     # 即 sites-available 文件夹中的一个虚拟主机配置文件。
-    run('sed "s/todo_app/{host}/g" deploy_tools/nginx.template.conf | sudo tee /etc/nginx/sites-available/{host}'
+    run('sed "s/todo_app/{host}/g" nginx.template.conf | sudo tee /etc/nginx/sites-available/{host}'
         .format(host=site_name))
 
     # 激活这个文件配置的虚拟主机
     run('sudo ln -s ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
 
     # 编写 Upstart 脚本
-    run('sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf | sudo tee /etc/init/gunicorn-{host}'
+    run('sed "s/SITENAME/{host}/g" gunicorn-upstart.template.conf | sudo tee /etc/init/gunicorn-{host}'
         .format(host=site_name))
 
     # 最后，启动这两个服务
