@@ -56,6 +56,37 @@ class ListViewTest(TestCase):
 
         self.assertEqual(response.context["list_attr"], correct_list)
 
+    def test_can_save_a_POST_request_to_an_existing_list(self):
+        """
+        测试发送一个 POST 请求后能够发送到正确的表单之中
+        :return:
+        """
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+
+        self.client.post("/lists/{unique_url}/".format(unique_url=correct_list.id),
+                         data={"item_text": "A new item for an existing list"})
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, "A new item for an existing list")
+        self.assertEqual(new_item.list_attr, correct_list)
+
+    def test_POST_redirects_to_list_view(self):
+        """
+        测试添加完事项后会回到显示表单的 html
+        :return:
+        """
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+
+        response = self.client.post(
+            "/lists/{unique_url}/".format(unique_url=correct_list.id),
+            data={"item_text": "A new item for an existing list"}
+        )
+
+        self.assertRedirects(response, "/lists/{unique_url}/".format(unique_url=correct_list.id))
+
 
 class NewListTest(TestCase):
     def test_saving_a_POST_request(self):
@@ -125,36 +156,3 @@ class HomePageTest(TestCase):
 
         excepted_html = render_to_string("home.html", request=request)
         self.assertEqual(response.content.decode("utf8"), excepted_html)
-
-
-class NewItemTest(TestCase):
-    def test_can_save_a_POST_request_to_an_existing_list(self):
-        """
-        测试发送一个 POST 请求后能够发送到正确的表单之中
-        :return:
-        """
-        other_list = List.objects.create()
-        correct_list = List.objects.create()
-
-        self.client.post("/lists/{unique_url}/add_item".format(unique_url=correct_list.id),
-                         data={"item_text": "A new item for an existing list"})
-
-        self.assertEqual(Item.objects.count(), 1)
-        new_item = Item.objects.first()
-        self.assertEqual(new_item.text, "A new item for an existing list")
-        self.assertEqual(new_item.list_attr, correct_list)
-
-    def test_redirects_to_list_view(self):
-        """
-        测试添加完事项后会回到显示表单的 html
-        :return:
-        """
-        other_list = List.objects.create()
-        correct_list = List.objects.create()
-
-        response = self.client.post(
-            "/lists/{unique_url}/add_item".format(unique_url=correct_list.id),
-            data={"item_text": "A new item for an existing list"}
-        )
-
-        self.assertRedirects(response, "/lists/{unique_url}/".format(unique_url=correct_list.id))
