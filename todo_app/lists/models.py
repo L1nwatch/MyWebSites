@@ -7,5 +7,5 @@ class List(models.Model):
 
 # Create your models here.
 class Item(models.Model):
-    text = models.TextField(default="")
+    text = models.TextField(default="", blank=False)
     list_attr = models.ForeignKey(List, default=None)  # List 的声明得在该类上方
