@@ -26,6 +26,10 @@ class ItemForm(forms.models.ModelForm):
             "text": {"required": EMPTY_LIST_ERROR}
         }
 
+    def save(self, for_list):
+        self.instance.list_attr = for_list
+        return super().save()
+
 
 if __name__ == "__main__":
     pass

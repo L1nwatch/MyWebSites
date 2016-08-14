@@ -25,7 +25,8 @@ def view_list(request, list_id):
     if request.method == "POST":
         form = ItemForm(data=request.POST)
         if form.is_valid():
-            Item.objects.create(text=request.POST["text"], list_attr=list_)
+            form.save(for_list=list_)
+            # Item.objects.create(text=request.POST["text"], list_attr=list_)
             return redirect(list_)
             # try:
             #     注意这里不是 Item.objects.create()
@@ -45,7 +46,8 @@ def new_list(request):
     # 使用 form.is_valid() 判断提交是否成功
     if form.is_valid():
         list_ = List.objects.create()
-        Item.objects.create(text=request.POST["text"], list_attr=list_)
+        form.save(for_list=list_)
+        # Item.objects.create(text=request.POST["text"], list_attr=list_)
         return redirect(list_)
     else:
         # 如果提交失败，把表单对象传入模板，而不显示一个硬编码的错误消息字符串
