@@ -8,7 +8,6 @@ from django.test import TestCase
 from lists.models import Item, List
 from django.core.exceptions import ValidationError
 
-
 __author__ = '__L1n__w@tch'
 
 
@@ -54,6 +53,10 @@ class ListAndItemModelTest(TestCase):
         with self.assertRaises(ValidationError):
             item.save()
             item.full_clean()
+
+    def test_get_absolute_url(self):
+        list_ = List.objects.create()
+        self.assertEqual(list_.get_absolute_url(), "/lists/{}/".format(list_.id))
 
 
 if __name__ == "__main__":
