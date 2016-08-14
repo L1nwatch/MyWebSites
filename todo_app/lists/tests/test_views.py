@@ -6,15 +6,11 @@
 对首页视图进行单元测试
 """
 
-from django.core.urlresolvers import resolve
 from django.test import TestCase
-from django.http import HttpRequest
-from django.template.loader import render_to_string
 from django.utils.html import escape
 
-from lists.views import home_page  # 这是接下来要定义的视图函数，其作用是返回所需的 HTML。要把这个函数保存在文件 lists/views.py
 from lists.models import Item, List
-from lists.forms import ItemForm
+from lists.forms import ItemForm, EMPTY_LIST_ERROR
 
 __author__ = '__L1n__w@tch'
 
@@ -89,17 +85,45 @@ class ListViewTest(TestCase):
 
         self.assertRedirects(response, "/lists/{unique_url}/".format(unique_url=correct_list.id))
 
-    def test_validation_erros_end_up_on_lists_page(self):
-        """
-        测试在一个清单上添加一个空项目
-        :return:
-        """
+    # def test_validation_errors_end_up_on_lists_page(self):
+    #     """
+    #     测试在一个清单上添加一个空项目
+    #     由于测试太多, 分成以下 5 个测试了
+    #     :return:
+    #     """
+    #     list_ = List.objects.create()
+    #     response = self.client.post("/lists/{}/".format(list_.id), data={"text": ""})
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTemplateUsed(response, "list.html")
+    #     expected_error = escape(EMPTY_LIST_ERROR)
+    #     self.assertContains(response, expected_error)
+
+    def post_invalid_input(self):
         list_ = List.objects.create()
-        response = self.client.post("/lists/{}/".format(list_.id), data={"text": ""})
+        return self.client.post("/lists/{}/".format(list_.id), data={"text": ""})
+
+    def test_for_invalid_input_nothing_saved_to_db(self):
+        self.post_invalid_input()
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_for_invalid_input_renders_list_template(self):
+        response = self.post_invalid_input()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "list.html")
-        expected_error = escape("You can't have an empty list item")
-        self.assertContains(response, expected_error)
+
+    def test_for_invalid_input_passes_form_to_template(self):
+        response = self.post_invalid_input()
+        self.assertIsInstance(response.context["form"], ItemForm)
+
+    def test_for_invalid_input_shows_error_on_page(self):
+        response = self.post_invalid_input()
+        self.assertContains(response, escape(EMPTY_LIST_ERROR))
+
+    def test_displays_item_form(self):
+        list_ = List.objects.create()
+        response = self.client.get("/lists/{}/".format(list_.id))
+        self.assertIsInstance(response.context["form"], ItemForm)
+        self.assertContains(response, 'name="text"')
 
 
 class NewListTest(TestCase):
@@ -127,20 +151,46 @@ class NewListTest(TestCase):
         self.assertEqual(response["location"], "/lists/{unique_url}/".format(unique_url=new_list.id))
         self.assertRedirects(response, "/lists/{unique_url}/".format(unique_url=new_list.id))  # 等价于上面两条
 
-    def test_validation_errors_are_sent_back_to_home_page_template(self):
+    # def test_validation_errors_are_sent_back_to_home_page_template(self):
+    #     """
+    #     测试添加一个空事项时会有提示
+    #     这里测试的项目太多了, 拆分成下面 2 个了.
+    #     :return:
+    #     """
+    #     response = self.client.post("/lists/new", data={"text": ""})
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTemplateUsed(response, "home.html")
+    #     excepted_error = EMPTY_LIST_ERROR
+    #     # excepted_error = "You can&#39;t have an empty list item" # 硬编码打出单引号
+    #     # self.assertContains(response, excepted_error)
+    #     self.assertContains(response, escape(excepted_error))
+
+    def test_for_invalid_input_renders_home_template(self):
         """
-        测试添加一个空事项时会有提示
+        如果有验证错误，应该渲染首页模板，并且返回 200 响应
         :return:
         """
         response = self.client.post("/lists/new", data={"text": ""})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "home.html")
-        excepted_error = "You can't have an empty list item"
-        # excepted_error = "You can&#39;t have an empty list item" # 硬编码打出单引号
-        # self.assertContains(response, excepted_error)
-        self.assertContains(response, escape(excepted_error))
 
-    def test_invalid_list_items_arent_saved(self):
+    def test_validation_errors_are_shown_on_home_page(self):
+        """
+        如果有验证错误，响应中应该包含错误信息
+        :return:
+        """
+        response = self.client.post("/lists/new", data={"text": ""})
+        self.assertContains(response, escape(EMPTY_LIST_ERROR))
+
+    def test_for_invalid_input_passes_form_to_template(self):
+        """
+        如果有验证错误，应该把表单对象传入模板
+        :return:
+        """
+        response = self.client.post("/lists/new", data={"text": ""})
+        self.assertIsInstance(response.context["form"], ItemForm)
+
+    def test_invalid_list_items_are_not_saved(self):
         """
         确保不会保存空待办事项
         :return:
