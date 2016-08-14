@@ -87,6 +87,18 @@ class ListViewTest(TestCase):
 
         self.assertRedirects(response, "/lists/{unique_url}/".format(unique_url=correct_list.id))
 
+    def test_validation_erros_end_up_on_lists_page(self):
+        """
+        测试在一个清单上添加一个空项目
+        :return:
+        """
+        list_ = List.objects.create()
+        response = self.client.post("/lists/{}/".format(list_.id), data={"item_text": ""})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "list.html")
+        expected_error = escape("You can't have an empty list item")
+        self.assertContains(response, expected_error)
+
 
 class NewListTest(TestCase):
     def test_saving_a_POST_request(self):
