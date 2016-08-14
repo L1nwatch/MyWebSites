@@ -4,17 +4,18 @@
 """
 负责编写视图的地方
 """
-from django.http import HttpResponse
+from lists.forms import ItemForm
+from lists.models import Item, List
+
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
-from lists.models import Item, List
 
 __author__ = '__L1n__w@tch'
 
 
 # Create your views here.
 def home_page(request):
-    return render(request, "home.html")
+    return render(request, "home.html", {"form": ItemForm()})
 
 
 def view_list(request, list_id):
@@ -24,7 +25,7 @@ def view_list(request, list_id):
     if request.method == "POST":
         try:
             # 注意这里不是 Item.objects.create()
-            item = Item(text=request.POST["item_text"], list_attr=list_)
+            item = Item(text=request.POST["text"], list_attr=list_)
             item.full_clean()
             item.save()
             return redirect(list_)
@@ -35,7 +36,7 @@ def view_list(request, list_id):
 
 def new_list(request):
     list_ = List.objects.create()
-    item = Item.objects.create(text=request.POST["item_text"], list_attr=list_)
+    item = Item.objects.create(text=request.POST["text"], list_attr=list_)
     try:
         item.full_clean()
         item.save()

@@ -60,6 +60,9 @@ class FunctionalTest(StaticLiveServerTestCase):
         # )
         self.assertIn(row_text, [row.text for row in rows])  # 这句话与上面那句等价, 不过精简了很多
 
+    def get_item_input_box(self):
+        return self.browser.find_element_by_id("id_text")
+
 
 __author__ = '__L1n__w@tch'
 

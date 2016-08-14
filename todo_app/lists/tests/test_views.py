@@ -10,9 +10,11 @@ from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
+from django.utils.html import escape
+
 from lists.views import home_page  # 这是接下来要定义的视图函数，其作用是返回所需的 HTML。要把这个函数保存在文件 lists/views.py
 from lists.models import Item, List
-from django.utils.html import escape
+from lists.forms import ItemForm
 
 __author__ = '__L1n__w@tch'
 
@@ -65,7 +67,7 @@ class ListViewTest(TestCase):
         correct_list = List.objects.create()
 
         self.client.post("/lists/{unique_url}/".format(unique_url=correct_list.id),
-                         data={"item_text": "A new item for an existing list"})
+                         data={"text": "A new item for an existing list"})
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
@@ -82,7 +84,7 @@ class ListViewTest(TestCase):
 
         response = self.client.post(
             "/lists/{unique_url}/".format(unique_url=correct_list.id),
-            data={"item_text": "A new item for an existing list"}
+            data={"text": "A new item for an existing list"}
         )
 
         self.assertRedirects(response, "/lists/{unique_url}/".format(unique_url=correct_list.id))
@@ -93,7 +95,7 @@ class ListViewTest(TestCase):
         :return:
         """
         list_ = List.objects.create()
-        response = self.client.post("/lists/{}/".format(list_.id), data={"item_text": ""})
+        response = self.client.post("/lists/{}/".format(list_.id), data={"text": ""})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "list.html")
         expected_error = escape("You can't have an empty list item")
@@ -106,7 +108,7 @@ class NewListTest(TestCase):
         测试页面是否能够保存 POST 请求, 并且能够把用户提交的待办事项保存到表格中
         :return:
         """
-        self.client.post("/lists/new", data={"item_text": "A new list item"})
+        self.client.post("/lists/new", data={"text": "A new list item"})
 
         # 检查是否把一个新 Item 对象存入数据库。objects.count() 是 objects.all().count() 的简写形式。
         self.assertEqual(Item.objects.count(), 1, "希望数据库中现在有 1 条数据, 然而却有 {} 条数据".format(Item.objects.count()))
@@ -118,7 +120,7 @@ class NewListTest(TestCase):
         测试在发送 POST 请求后是否会重定向
         :return:
         """
-        response = self.client.post("/lists/new", data={"item_text": "A new list item"})
+        response = self.client.post("/lists/new", data={"text": "A new list item"})
         new_list = List.objects.first()
 
         self.assertEqual(response.status_code, 302, "希望返回 302 代码, 然而却返回了 {}".format(response.status_code))
@@ -130,7 +132,7 @@ class NewListTest(TestCase):
         测试添加一个空事项时会有提示
         :return:
         """
-        response = self.client.post("/lists/new", data={"item_text": ""})
+        response = self.client.post("/lists/new", data={"text": ""})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "home.html")
         excepted_error = "You can't have an empty list item"
@@ -143,28 +145,43 @@ class NewListTest(TestCase):
         确保不会保存空待办事项
         :return:
         """
-        self.client.post("/lists/new", data={"item_text": ""})
+        self.client.post("/lists/new", data={"text": ""})
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(List.objects.count(), 0)
 
 
 class HomePageTest(TestCase):
-    def test_root_url_resolves_to_home_page_view(self):
-        """
-        测试访问根路径时是由 home_page 视图函数来负责相关处理的
-        :return:
-        """
-        found = resolve("/")  # resolve 是 Django 内部使用的函数，用于解析 URL，并将其映射到对应的视图函数上。
-        self.assertEqual(found.func, home_page)  # 检查解析网站根路径"/"时，是否能找到名为 home_page 的函数
+    maxDiff = None  # 默认情况下会解决较长的差异，需要进行设置
 
-    def test_home_page_returns_correct_html(self):
-        """
-        测试访问主页时得到的是一个正确的 html 文本
-        :return:
-        """
-        request = HttpRequest()  # 创建了一个 HttpRequest 对象，用户在浏览器中请求网页时，Django 看到的就是 HttpRequest 对象。
+    # def test_root_url_resolves_to_home_page_view(self):
+    #     """
+    #     测试访问根路径时是由 home_page 视图函数来负责相关处理的
+    #     :return:
+    #     """
+    #     found = resolve("/")  # resolve 是 Django 内部使用的函数，用于解析 URL，并将其映射到对应的视图函数上。
+    #     self.assertEqual(found.func, home_page)  # 检查解析网站根路径"/"时，是否能找到名为 home_page 的函数
 
-        response = home_page(request)  # 把这个 HttpRequest 对象传给 home_page 视图，得到响应。
+    # def test_home_page_returns_correct_html(self):
+    #     """
+    #     测试访问主页时得到的是一个正确的 html 文本
+    #     :return:
+    #     """
+    #     request = HttpRequest()  # 创建了一个 HttpRequest 对象，用户在浏览器中请求网页时，Django 看到的就是 HttpRequest 对象。
+    #
+    #     response = home_page(request)  # 把这个 HttpRequest 对象传给 home_page 视图，得到响应。
+    #
+    #     excepted_html = render_to_string("home.html", {"form": ItemForm()}, request=request)
+    #     # self.assertEqual(response.content.decode("utf8"), excepted_html)
+    #
+    #     # 对比长字符串时 assertMultiLineEqual 很有用，它会以差异的格式显示输出
+    #     self.assertMultiLineEqual(response.content.decode(), excepted_html)
 
-        excepted_html = render_to_string("home.html", request=request)
-        self.assertEqual(response.content.decode("utf8"), excepted_html)
+    def test_home_page_renders_home_template(self):
+        response = self.client.get("/")
+        # 使用辅助方法 assertTemplateUsed 替换之前手动测试模板的 diamante
+        self.assertTemplateUsed(response, "home.html")
+
+    def test_home_page_uses_item_form(self):
+        response = self.client.get("/")
+        # 使用 assertIsInstance 确认视图使用的是正确的表单类
+        self.assertIsInstance(response.context["form"], ItemForm)
