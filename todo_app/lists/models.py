@@ -9,5 +9,12 @@ class List(models.Model):
 
 # Create your models here.
 class Item(models.Model):
-    text = models.TextField(default="", blank=False)
+    class Meta:
+        ordering = ("id",)
+        unique_together = ("text", "list_attr")
+
+    text = models.TextField(default="", blank=False, unique=False)
     list_attr = models.ForeignKey(List, default=None)  # List 的声明得在该类上方
+
+    def __str__(self):
+        return self.text
