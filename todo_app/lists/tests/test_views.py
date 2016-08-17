@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.utils.html import escape
 
 from lists.models import Item, List
-from lists.forms import ItemForm, EMPTY_LIST_ERROR
+from lists.forms import ItemForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR
 
 __author__ = '__L1n__w@tch'
 
@@ -127,7 +127,7 @@ class ListViewTest(TestCase):
         item1 = Item.objects.create(list_attr=list1, text="textey")
         response = self.client.post("/lists/{}".format(list1.id), data={"text": "textey"})
 
-        expected_error = escape("You've already got this in your list")
+        expected_error = escape(DUPLICATE_ITEM_ERROR)
         self.assertContains(response, expected_error)
         self.assertTemplateUsed(response, "list.html")
         self.assertEqual(Item.objects.all().count(), 1)

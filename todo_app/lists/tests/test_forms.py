@@ -10,7 +10,6 @@ from lists.forms import (
     ExistingListItemForm, ItemForm
 )
 from lists.models import List, Item
-
 from unittest import skip
 
 __author__ = '__L1n__w@tch'
@@ -54,7 +53,7 @@ class ExistingListItemFormTest(TestCase):
 
     def test_form_validation_for_duplicate_items(self):
         list_ = List.objects.create()
-        Item.objects.create(list=list_, text="no twins!")
+        Item.objects.create(list_attr=list_, text="no twins!")
         form = ExistingListItemForm(for_list=list_, data={"text": "no twins!"})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["text"], [DUPLICATE_ITEM_ERROR])
