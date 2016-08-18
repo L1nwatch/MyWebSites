@@ -87,7 +87,7 @@ def _update_static_files(source_folder):
 
 
 def _update_database(source_folder):
-    run("cd {} && ../virtualenv/bin/python3 manage.py migrate --noinput".format(source_folder))
+    run("cd {} && ../virtualenv/bin/python3 todo_app/manage.py migrate --noinput".format(source_folder))
 
 
 def _set_nginx_gunicron(source_folder, site_name):
