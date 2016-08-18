@@ -115,7 +115,7 @@ def _set_nginx_gunicron(source_folder, site_name):
         .format(source_folder, host=site_name))
 
     # 最后，启动这两个服务
-    run('sudo service nginx reload && sudo start gunicorn-{host}'.format(host=site_name))
+    run('sudo service nginx reload && sudo restart gunicorn-{host}'.format(host=site_name))
 
 
 if __name__ == "__main__":
