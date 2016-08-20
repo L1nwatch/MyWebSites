@@ -7,32 +7,46 @@
 </head>
 
 <body>
-<div id="qunit">
-    <div id="qunit-fixture"></div>
-
+<div id="qunit"></div>
+<div id="qunit-fixture">
     <form> <!-- form 及其中的内容放在那儿是为了表示真实的清单页面中的内容 -->
         <input name="text"/>
         <div class="has-error">
-            Error text
+            Error Text
         </div>
     </form>
-
-    <script src="http://code.jquery.com/jquery.min.js"></script>
-    <script src="qunit.js"></script>
-    <script>
-        /* global $, test, equal */
-
-        QUnit.test("smoke test", function (assert) {
-            //$(".has-error").show();
-            assert.equal($('.has-error').is(':visible'), true);
-            /* jQuery 开始，$ 是 jQuery 用来查找 DOM 中的内容。$ 的第一个参数是 CSS 选择符，要查找类为 "error" 的所有元素。查找得到的结果是一个对象，表示一个或多个 DOM 元素。然后，可以在这个对象上使用很多有用的方法处理或者查看这些元素。 */
-            /* 其中一个方法是 .is，它的作用是指出某个元素的表现是否和指定的 CSS 属性匹配。这里使用 :visible 检查元素是否显示出来。 */
-            $(".has-error").hide();
-            /* 使用 jQuery 提供的 .hide() 方法隐藏这个 <div> 元素。其实，这个方法是在元素上动态设定 style="display: none" 属性。 */
-            assert.equal($('.has-error').is(':visible'), false);
-            /* 最后，使用第二个 equal 断言检查隐藏是否成功。 */
-        });
-    </script>
 </div>
+
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="qunit.js"></script>
+<script>
+    /* global $, test, equal */
+
+    QUnit.test("smoke test1", function (assert) {
+        // $("#has-error").show();
+        assert.equal($('.has-error').is(':visible'), true, "Not hidden");
+        /* jQuery 开始，$ 是 jQuery 用来查找 DOM 中的内容。$ 的第一个参数是 CSS 选择符，要查找类为 "error" 的所有元素。查找得到的结果是一个对象，表示一个或多个 DOM 元素。然后，可以在这个对象上使用很多有用的方法处理或者查看这些元素。 */
+        /* 其中一个方法是 .is，它的作用是指出某个元素的表现是否和指定的 CSS 属性匹配。这里使用 :visible 检查元素是否显示出来。 */
+        $('.has-error').hide();
+        /* 使用 jQuery 提供的 .hide() 方法隐藏这个 <div> 元素。其实，这个方法是在元素上动态设定 style="display: none" 属性。 */
+        assert.equal($('.has-error').is(':visible'), false, "Hidden");
+        /* 最后，使用第二个 equal 断言检查隐藏是否成功。 */
+    });
+
+    QUnit.test("smoke test2", function (assert) {
+        assert.equal($('.has-error').is(':visible'), true);
+        $('.has-error').hide();
+        assert.equal($('.has-error').is(':visible'), false);
+    });
+</script>
+
+<script>
+    /* global $, test, equal */
+    QUnit.test("errors should be hidden on keypress", function (assert) {
+        $('input').trigger('keypress'); // jQuery 提供的 .trigger 方法主要用于测试，作用是在指定的元素上触发一个 JavaScript DOM 事件。这里使用的是 keypress 事件，当用户在指定的输入框中输入内容时，浏览器就会触发这个事件。
+        //$('.has-error').hide();
+        assert.equal($('.has-error').is(':visible'), false);
+    });
+</script>
 </body>
 </html>
