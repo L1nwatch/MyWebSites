@@ -19,6 +19,8 @@
 
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="qunit.js"></script>
+
+<!-- 学习用
 <script>
     /* global $, test, equal */
 
@@ -39,14 +41,21 @@
         assert.equal($('.has-error').is(':visible'), false);
     });
 </script>
+-->
 
+<script src="../list.js"></script>
 <script>
     /* global $, test, equal */
     QUnit.test("errors should be hidden on keypress", function (assert) {
-        $('input').trigger('keypress'); // jQuery 提供的 .trigger 方法主要用于测试，作用是在指定的元素上触发一个 JavaScript DOM 事件。这里使用的是 keypress 事件，当用户在指定的输入框中输入内容时，浏览器就会触发这个事件。
+        $('input[name="text"]').trigger('keypress'); // jQuery 提供的 .trigger 方法主要用于测试，作用是在指定的元素上触发一个 JavaScript DOM 事件。这里使用的是 keypress 事件，当用户在指定的输入框中输入内容时，浏览器就会触发这个事件。
         //$('.has-error').hide();
         assert.equal($('.has-error').is(':visible'), false);
     });
+
+    QUnit.test("errors not be hidden unless there is a keypress", function (assert) {
+        assert.equal($('.has-error').is(':visible'), true);
+    });
 </script>
+
 </body>
 </html>
