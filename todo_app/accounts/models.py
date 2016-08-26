@@ -1,8 +1,14 @@
-from django.db import models
-
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+
+
+class ListUserManager(BaseUserManager):
+    def create_user(self, email):
+        ListUser.obejcts.create(email=email)
+
+    def create_superuser(self, email, password):
+        self.create_user(email)
 
 
 class ListUser(AbstractBaseUser, PermissionsMixin):
@@ -19,11 +25,3 @@ class ListUser(AbstractBaseUser, PermissionsMixin):
     @property
     def is_active(self):
         return True
-
-
-class ListUserManager(BaseUserManager):
-    def create_user(self, email):
-        ListUser.obejcts.create(email=email)
-
-    def create_superuser(self, email, password):
-        self.create_user(email)

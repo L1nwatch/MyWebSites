@@ -35,8 +35,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "lists"
+    "lists",
+    "accounts"
 ]
+
+AUTH_USER_MODEL = 'accounts.ListUser'
+AUTHENTICATION_BACKENDS = (
+    'accounts.authentication.PersonAuthenticationBackend',
+)
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,7 +81,7 @@ WSGI_APPLICATION = 'todo_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../../database/db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '../database/db.sqlite3'),
     }
 }
 
@@ -115,3 +121,20 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../static"))
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+        },
+    },
+    'root': {'level': 'INFO'},
+}
