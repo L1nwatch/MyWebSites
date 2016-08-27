@@ -56,7 +56,6 @@
 
 
         var logoutLink = document.getElementById("logout");
-
         if (logoutLink) {
             logoutLink.onclick = function () {
                 navigator.id.logout();
@@ -65,7 +64,7 @@
 
         var currentUser = '{{ user.email }}' || null;
 
-        var cstf_token = '{{ csrf_token }}';
+        var csrf_token = '{{ csrf_token }}';
         console.log(currentUser);
 
         navigator.id.watch({
@@ -80,7 +79,7 @@
                         })
             },
             onlogout: function () {
-                $.post('/account/logout')
+                $.post('/accounts/logout')
                         .always(function () {
                             window.location.reload();
                         });

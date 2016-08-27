@@ -14,6 +14,7 @@ __author__ = '__L1n__w@tch'
 class PersonAuthenticationBackend(object):
     def authenticate(self, assertion):
         # 把判定数据发给 Mozilla 的验证服务
+        # 坑爹啊, 纠结了一个下午, 结果发现原因是这里原来写的 localhost, 而自己测试的是 127.0.0.1
         data = {'assertion': assertion, 'audience': 'localhost'}
         print('sending to mozilla', data, file=sys.stderr)
         resp = requests.post('https://verifier.login.persona.org/verify', data=data)
@@ -33,7 +34,7 @@ class PersonAuthenticationBackend(object):
                     return ListUser.objects.create(email=email)
 
     def get_user(self, email):
-        return ListUser.objets.get(email=email)
+        return ListUser.objects.get(email=email)
 
 
 if __name__ == "__main__":

@@ -4,8 +4,10 @@
 """ Description
 """
 # functional_tests/test_login.py
+from unittest import skip
 from base import FunctionalTest
 import time
+from selenium.webdriver.support.ui import WebDriverWait
 
 __author__ = '__L1n__w@tch'
 
@@ -47,6 +49,11 @@ class LoginTest(FunctionalTest):
             retries -= 1
             time.sleep(0.5)
         self.fail("could not find window")
+
+    def wait_for_element_with_id(self, element_id):
+        WebDriverWait(self.browser, timeout=30).until(
+            lambda b: b.find_element_by_id(element_id)
+        )
 
 
 if __name__ == "__main__":

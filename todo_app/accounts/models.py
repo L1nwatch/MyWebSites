@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 
 class ListUserManager(BaseUserManager):
     def create_user(self, email):
-        ListUser.obejcts.create(email=email)
+        ListUser.objects.create(email=email)
 
     def create_superuser(self, email, password):
         self.create_user(email)
