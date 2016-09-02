@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Javascript tests</title>
-    <link rel="stylesheet" href="qunit.css">
+    <link rel="stylesheet" href="../../../todo_app/static/tests/qunit.css">
 </head>
 
 <body>
@@ -13,13 +13,13 @@
 </div>
 
 <script src="http://code.jquery.com/jquery.min.js"></script>
-<script src="../../../superlists/static/tests/qunit.js"></script>
+<script src="../../../todo_app/static/tests/qunit.js"></script>
 <script src="../accounts.js"></script>
 <script>
     /* global $, test, equal, sinon, Superlists */
 
-    test("initialize binds sign in button to navigator.id.request", function () {
-        var requestsWasCalled = false;	// 确保 requestWasCalled 的初始值为 false
+    QUnit.test("initialize binds sign in button to navigator.id.request", function (assert) {
+        var requestWasCalled = false;	// 确保 requestWasCalled 的初始值为 false
         var mockRequestFunction = function () {
             requestWasCalled = true;
         };	// mockRequestFunction 是个简单的函数，调用时会把 requestWasCalled 变量的值简单地设为 true
@@ -31,7 +31,7 @@
 
         Superlists.Accounts.initialize(mockNavigator); // 触发点击事件之前，像在真正的页面中一样，调用 Superlists.Accounts.initialize 函数。唯一的区别在于，没有传入 Persona 提供的真正全局 navigator 对象，而是虚拟的 mockNavigator 对象
         $("#id_login").trigger("click");	// id_login 元素上发生点击事件时调用
-        equal(requestWasCalled, true);	// 断定变量 requestWasCalled 的值为 true。这个断言检查的其实是有没有像在 `navigatro.id.request` 中一样调用 `request` 函数。
+        assert.equal(requestWasCalled, true);	// 断定变量 requestWasCalled 的值为 true。这个断言检查的其实是有没有像在 `navigatro.id.request` 中一样调用 `request` 函数。
     })
 </script>
 </body>
