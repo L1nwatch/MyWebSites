@@ -14,7 +14,6 @@
 
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="../../../todo_app/static/tests/qunit.js"></script>
-<script src="../../../todo_app/static/accounts.js"></script>
 <script src="../../../todo_app/static/tests/sinon.js"></script>
 <script src="../accounts.js"></script>
 <script>
@@ -27,7 +26,9 @@
         };	// mockRequestFunction 是个简单的函数，调用时会把 requestWasCalled 变量的值简单地设为 true
         var mockNavigator = { // mockNavigator 其实就是一个普通的 JavaScript 对象，有个名为 id 的属性，其值也是一个对象，在这个对象中有个名为 request 的属性，其值是 mockRequestFunction 变量
             id: {
-                request: mockRequestFunction
+                request: mockRequestFunction,
+                watch: function () {
+                }
             }
         };
 
@@ -35,27 +36,81 @@
         assert.equal(requestWasCalled, false, "check request not called before click");
         $("#id_login").trigger("click");	// id_login 元素上发生点击事件时调用
         assert.equal(requestWasCalled, true, "check request called after click");	// 断定变量 requestWasCalled 的值为 true。这个断言检查的其实是有没有像在 `navigatro.id.request` 中一样调用 `request` 函数。
-    })
+    });
 </script>
 <script>
-    QUnit.test("initialize calls navigator.id.watch", function (assert) {
-        var user = 'cuurent user';
-        var token = 'csrf token';
-        var urls = {login: 'login url', logout: 'logout url'};
-        var mockNavigator = {
-            id: {
-                watch: sinon.mock() // 和之前一样，创建一个模拟的 navigator 对象，不过这一次没有自己动手定义函数实现所需的功能，而是使用一个 sinon.mock() 对象
-            }
-        };
-
-        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
-
-        assert.equal(
-                mockNavigator.id.watch.calledOnce, // 这个对象会在特殊的属性(例如 calledOnce) 中记录发生了什么，在断言中可以比较这个属性的值。
-                true,
-                'check watch function called'
-        );
+    var user, token, urls, mockNavigator, requests, xhr; // 把 user、token、urls 等变量放在外层作用域中，这样它们才能用于该文件中的所有测试。
+    QUnit.module("navigator.id.watch tests", {
+        // 这里书中用的是 setup, 不过自己测试了无效
+        beforeEach: function () {
+            user = 'current user'; // setup 函数中的变量就像 unittest 中的 setUP 函数一样，会在每个测试之前初始化。这些变量中包括 mockNavigator
+            token = 'csrf token';
+            urls = {login: 'login url', logout: 'logout url'};
+            mockNavigator = {
+                id: {
+                    watch: sinon.mock()
+                }
+            };
+            xhr = sinon.useFakeXMLHttpRequest(); // 在 setup 函数中，还调用了 Sinon 提供的 useFakeXMLHttpRequest 函数，暂时屏蔽浏览器对 Ajax 的支持
+            requests = [];
+            // 告诉 Sinon，把所有 Ajax 请求都保存到 requests 数组中，以便在测试中使用
+            xhr.onCreate = function (request) {
+                requests.push(request);
+            };
+        },
+        // 这里书中是用的 teardown, 不过自己测试了无效
+        afterEach: function () {
+            mockNavigator.id.watch.reset(); // 最后，要做些清理工作——在两次测试之间还原 watch 驭件(否则，在某次测试中的调用结果会显示在另一个测试中)。
+            xhr.restore(); // 然后把 JavaScript 中的 XMLHttpRequest 还原到初始状态
+        }
     });
+
+    QUnit.test("initialize calls navigator.id.watch", function (assert) {
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+        assert.equal(mockNavigator.id.watch.calledOnce, true, 'check watch function called');
+    });
+
+    QUnit.test("watch sees current user", function (assert) {
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+        var watchCallArgs = mockNavigator.id.watch.firstCall.args[0];
+        assert.equal(watchCallArgs.loggedInUser, user, 'check user');
+    });
+
+    /* 以下是使用 Module 之前的测试代码
+     QUnit.test("initialize calls navigator.id.watch", function (assert) {
+     var user = 'cuurent user';
+     var token = 'csrf token';
+     var urls = {login: 'login url', logout: 'logout url'};
+     var mockNavigator = {
+     id: {
+     watch: sinon.mock() // 和之前一样，创建一个模拟的 navigator 对象，不过这一次没有自己动手定义函数实现所需的功能，而是使用一个 sinon.mock() 对象
+     }
+     };
+
+     Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+
+     assert.equal(
+     mockNavigator.id.watch.calledOnce, // 这个对象会在特殊的属性(例如 calledOnce) 中记录发生了什么，在断言中可以比较这个属性的值。
+     true,
+     'check watch function called'
+     );
+     });
+
+     QUnit.test("watch sees current user", function (assert) {
+     var user = 'current user';
+     var token = 'csrf token';
+     var urls = {login: 'login url', logout: 'logout url'};
+     var mockNavigator = {
+     id: {
+     watch: sinon.mock()
+     }
+     };
+
+     Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+     var watchCallArgs = mockNavigator.id.watch.firstCall.args[0];
+     assert.equal(watchCallArgs.loggedInUser, user, 'check user');
+     });
+     */
 </script>
 </body>
 </html>
