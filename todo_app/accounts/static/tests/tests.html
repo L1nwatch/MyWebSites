@@ -14,6 +14,8 @@
 
 <script src="http://code.jquery.com/jquery.min.js"></script>
 <script src="../../../todo_app/static/tests/qunit.js"></script>
+<script src="../../../todo_app/static/accounts.js"></script>
+<script src="../../../todo_app/static/tests/sinon.js"></script>
 <script src="../accounts.js"></script>
 <script>
     /* global $, test, equal, sinon, Superlists */
@@ -30,9 +32,30 @@
         };
 
         Superlists.Accounts.initialize(mockNavigator); // 触发点击事件之前，像在真正的页面中一样，调用 Superlists.Accounts.initialize 函数。唯一的区别在于，没有传入 Persona 提供的真正全局 navigator 对象，而是虚拟的 mockNavigator 对象
+        assert.equal(requestWasCalled, false, "check request not called before click");
         $("#id_login").trigger("click");	// id_login 元素上发生点击事件时调用
-        assert.equal(requestWasCalled, true);	// 断定变量 requestWasCalled 的值为 true。这个断言检查的其实是有没有像在 `navigatro.id.request` 中一样调用 `request` 函数。
+        assert.equal(requestWasCalled, true, "check request called after click");	// 断定变量 requestWasCalled 的值为 true。这个断言检查的其实是有没有像在 `navigatro.id.request` 中一样调用 `request` 函数。
     })
+</script>
+<script>
+    QUnit.test("initialize calls navigator.id.watch", function (assert) {
+        var user = 'cuurent user';
+        var token = 'csrf token';
+        var urls = {login: 'login url', logout: 'logout url'};
+        var mockNavigator = {
+            id: {
+                watch: sinon.mock() // 和之前一样，创建一个模拟的 navigator 对象，不过这一次没有自己动手定义函数实现所需的功能，而是使用一个 sinon.mock() 对象
+            }
+        };
+
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+
+        assert.equal(
+                mockNavigator.id.watch.calledOnce, // 这个对象会在特殊的属性(例如 calledOnce) 中记录发生了什么，在断言中可以比较这个属性的值。
+                true,
+                'check watch function called'
+        );
+    });
 </script>
 </body>
 </html>
