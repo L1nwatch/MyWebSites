@@ -111,6 +111,48 @@
      assert.equal(watchCallArgs.loggedInUser, user, 'check user');
      });
      */
+
+    QUnit.test("onlogin does ajax post to login url", function (assert) {
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+        var onloginCallback = mockNavigator.id.watch.firstCall.args[0].onlogin; // 从 navigator 模拟对象的 watch 驭件中可以提取出我们定义的 onlogin 回调函数
+        onloginCallback(); // 为了测试这个回调函数，可以直接调用它
+        assert.equal(requests.length, 1, 'check ajax request'); // Sinon 中的 fakeXMLHttpRequest 服务器会捕获我们发出的任意 Ajax 请求，并把它们存入 requests 数组。然后可以检查很多信息，例如是否为 POST 请求，或者请求的是哪个 URL
+        assert.equal(requests[0].method, 'POST');
+        assert.equal(requests[0].url, urls.login, 'check url');
+    });
+
+    QUnit.test("onlogin sends assertion with csrf token", function (assert) {
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+        var onloginCallback = mockNavigator.id.watch.firstCall.args[0].onlogin;
+        var assertion = 'browser-id assertion';
+        onloginCallback(assertion);
+        assert.equal(
+                requests[0].requestBody,
+                $.param({assertion: assertion, csrfmiddlewaretoken: token}), 'check POST data'
+                // POST 请求真正发送的参数保存在 .requestBody 中，而且被 URL 编码了(使用 &key=val 的语法形式)。jQuery 提供的 $.param 函数可以进行 URL 编码，所以对比时调用了这个函数。
+        );
+    });
+
+    QUnit.test("onlogout is just a placeholder", function (assert) {
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+        var onlogoutCallback = mockNavigator.id.watch.firstCall.args[0].onlogout;
+        assert.equal(typeof onlogoutCallback, "function", "onlogout should be a function");
+    });
+
+    QUnit.test("onlogin post failure should do navigator.id.logout", function (assert) {
+        mockNavigator.id.logout = sinon.mock(); // 为需要测试的 mockNavigator.id.logout 函数创建一个驭件
+        Superlists.Accounts.initialize(mockNavigator, user, token, urls);
+        var onloginCallback = mockNavigator.id.watch.firstCall.args[0].onlogin;
+        var server = sinon.fakeServer.create(); // 使用 Sinon 提供的 fakeServer。这是建立在 fakeXMLHttpRequest 之上的一个抽象对象，用来模拟 Ajax 服务器的响应
+        server.respondWith([403, {}, "permission denied"]); // 让虚拟服务器返回 403 "permission denied" 响应，以此模拟用户未授权时的状态
+
+        onloginCallback();
+        assert.equal(mockNavigator.id.logout.called, false, "should not logout yet");
+
+        server.respond(); // 然后，让虚拟服务器发送响应。因为只有响应发出后才会调用 logout 函数
+        assert.equal(mockNavigator.id.logout.called, true, "should call logout");
+    });
 </script>
+
 </body>
 </html>
