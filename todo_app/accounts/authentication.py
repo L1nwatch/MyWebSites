@@ -5,7 +5,7 @@
 """
 
 import requests
-import logging
+# import logging
 from django.contrib.auth import get_user_model
 
 __author__ = '__L1n__w@tch'
