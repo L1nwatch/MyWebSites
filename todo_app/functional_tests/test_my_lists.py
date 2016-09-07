@@ -4,6 +4,7 @@
 """
 跳过认证, 进行功能测试
 """
+from unittest import skip
 from django.conf import settings
 from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY, get_user_model
 from django.contrib.sessions.backends.db import SessionStore
@@ -15,6 +16,7 @@ User = get_user_model()
 
 
 class MyListsTest(FunctionalTest):
+    @skip("这个只能在本地绕过认证, 远程功能测试时使用不了")
     def create_pre_authenticated_session(self, email):
         user = User.objects.create(email=email)
         session = SessionStore()
