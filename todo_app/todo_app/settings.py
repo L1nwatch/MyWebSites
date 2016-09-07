@@ -146,7 +146,7 @@ LOGGING = {
         'logfile': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR + "../logfile",
+            'filename': os.path.join(BASE_DIR, "../logfile")
         },
     },
     'root': {
