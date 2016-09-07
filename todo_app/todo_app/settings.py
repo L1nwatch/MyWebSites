@@ -118,6 +118,23 @@ STATIC_ROOT = os.path.join(BASE_DIR, "../static/")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "todo_app", "static"),)
 
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#         },
+#     },
+#     'root': {'level': 'INFO'},
+# }
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -126,13 +143,16 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
         },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR + "../logfile",
         },
     },
-    'root': {'level': 'INFO'},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console', 'logfile']
+    },
 }
 
 AUTH_USER_MODEL = "accounts.User"
