@@ -92,6 +92,7 @@ def _update_static_files(source_folder):
 
 
 def _update_database(source_folder):
+    run("cd {} && ../virtualenv/bin/python3 todo_app/manage.py makemigrations --noinput".format(source_folder))
     run("cd {} && ../virtualenv/bin/python3 todo_app/manage.py migrate --noinput".format(source_folder))
 
 
