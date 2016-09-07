@@ -24,7 +24,10 @@ SECRET_KEY = 'vbnm8!0+ho55di_*o@5jk9#u0rgt1r5b#eo5lk(_u$v&8)$-77'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# 部署脚本会修改这个变量
+DOMAIN = "localhost"
+
+ALLOWED_HOSTS = [DOMAIN]
 
 # Application definition
 
