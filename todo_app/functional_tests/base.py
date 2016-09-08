@@ -7,6 +7,9 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from server_tools import reset_database
+
+__author__ = '__L1n__w@tch'
 
 
 class FunctionalTest(StaticLiveServerTestCase):
@@ -18,10 +21,19 @@ class FunctionalTest(StaticLiveServerTestCase):
         for arg in sys.argv:  # 在命令行中查找参数 liveserver(从 sys.argv 中获取)
             if "liveserver" in arg:
                 # 如果找到了，就让测试类跳过常规的 setUpClass 方法，把过渡服务器的 URL 赋值给 server_url 变量
-                cls.server_url = "http://" + arg.split("=")[1]
+                cls.server_host = arg.split("=")[1]
+                # 如果检测到命令行参数中有 liveserver, 就不仅存储 cls.server_url 属性，还存储 server_host 和 against_staging 属性
+                cls.server_url = "http://" + cls.server_host
+                cls.against_staging = True
                 return
         super().setUpClass()
+        cls.against_staging = False
         cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if not cls.against_staging:
+            super().tearDownClass()
 
     # @classmethod
     # def tearDownClass(cls):
@@ -34,6 +46,9 @@ class FunctionalTest(StaticLiveServerTestCase):
         使用这个方法打开浏览器。
         :return:
         """
+        # 需要在两次测试之间还原服务器中数据库的方法
+        if self.against_staging:
+            reset_database(self.server_host)
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)  # 等待 3 秒钟
 
@@ -79,8 +94,6 @@ class FunctionalTest(StaticLiveServerTestCase):
         navbar = self.browser.find_element_by_css_selector(".navbar")
         self.assertNotIn(email, navbar.text)
 
-
-__author__ = '__L1n__w@tch'
 
 if __name__ == "__main__":
     pass
