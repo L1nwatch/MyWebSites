@@ -13,6 +13,11 @@ SSH_PORT = 26832
 
 
 def create_session_on_server(host, email):
+    # print(THIS_FOLDER)
+    # return subprocess.check_output(
+    #     "cd {} && fab create_session_on_server:email={} --host={}:{} --hide=everything,status"
+    #         .format(THIS_FOLDER, email, host, SSH_PORT), shell=True).decode().strip()
+    # 书里给的写法执行不了, 原因未知:
     return subprocess.check_output(
         [
             "fab",
@@ -34,4 +39,4 @@ def reset_database(host):
 
 
 if __name__ == "__main__":
-    pass
+    print(THIS_FOLDER)
