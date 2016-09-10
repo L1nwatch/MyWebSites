@@ -41,6 +41,7 @@ class MyListsTest(FunctionalTest):
         # Y 是已登录用户
         self.create_pre_authenticated_session(email)
 
+        print("Aaaa")
         self.browser.get(self.server_url)
         self.wait_to_be_logged_in(email)
 
