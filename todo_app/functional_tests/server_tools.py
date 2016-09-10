@@ -13,22 +13,20 @@ SSH_PORT = 26832
 
 
 def create_session_on_server(host, email):
-    # print(THIS_FOLDER)
-    # return subprocess.check_output(
-    #     "cd {} && fab create_session_on_server:email={} --host={}:{} --hide=everything,status"
-    #         .format(THIS_FOLDER, email, host, SSH_PORT), shell=True).decode().strip()
-    # 书里给的写法执行不了, 原因未知:
-    return subprocess.check_output(
+    result = subprocess.check_output(
         [
             "fab",
             # 可以看出，在命令行中指定 fab 函数的参数使用的句法很简单，冒号后跟着 "变量=参数" 形式的写法
             "create_session_on_server:email={}".format(email),
             "--host={}:{}".format(host, SSH_PORT),  # 自己的服务器使用 SSH_PORT 端口号
             # 因为这些工作通过 Fabric 和子进程完成，而且在服务器中运行，所以从命令行的输出中提取字符串形式的会话键时一定要格外小心
-            "--hide=everything,status",
+            # "--hide=everything,status",
+            "--hide=stdout"
         ],
         cwd=THIS_FOLDER
     ).decode().strip()
+    print("测试: {}".format(result))
+    return result
 
 
 def reset_database(host):
