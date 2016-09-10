@@ -29,7 +29,6 @@ class MyListsTest(FunctionalTest):
         ## 为了设定 cookie，我们要先访问网站
         ## 而 404 页面是加载最快的
         self.browser.get(self.server_url + "/404_no_such_url/")
-        print("cookie = {}".format(session_key))
         self.browser.add_cookie(dict(
             name=settings.SESSION_COOKIE_NAME,
             value=session_key,
