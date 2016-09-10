@@ -39,7 +39,7 @@ class MyListsTest(FunctionalTest):
         ))
 
     def test_logged_in_users_lists_are_saved_as_my_lists(self):
-        email = "edith@mockmyid.com"
+        email = "edith@mockmyid.com" # 这个邮箱成功了, 我自己的邮箱好像还要密码所以就失败了?
 
         self.browser.get(self.server_url)
         self.wait_to_be_logged_out(email)
@@ -48,7 +48,6 @@ class MyListsTest(FunctionalTest):
         self.create_pre_authenticated_session(email)
 
         self.browser.get(self.server_url)
-        time.sleep(300)
         self.wait_to_be_logged_in(email)
 
 
