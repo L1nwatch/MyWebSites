@@ -20,12 +20,15 @@ User = get_user_model()
 class MyListsTest(FunctionalTest):
     def create_pre_authenticated_session(self, email):
         if self.against_staging:
+            print("[*] 远程服务器")
             session_key = create_session_on_server(self.server_host, email)
         else:
+            print("[*] 本地服务器")
             session_key = create_pre_authenticated_session(email)
         ## 为了设定 cookie，我们要先访问网站
         ## 而 404 页面是加载最快的
         self.browser.get(self.server_url + "/404_no_such_url/")
+        print("即将添加的 cookie 值, name={}, value={}".format(settings.SESSION_COOKIE_NAME, session_key))
         self.browser.add_cookie(dict(
             name=settings.SESSION_COOKIE_NAME,
             value=session_key,
@@ -41,7 +44,6 @@ class MyListsTest(FunctionalTest):
         # Y 是已登录用户
         self.create_pre_authenticated_session(email)
 
-        print("Aaaa")
         self.browser.get(self.server_url)
         self.wait_to_be_logged_in(email)
 
