@@ -32,7 +32,7 @@ class MyListsTest(FunctionalTest):
         print("服务器创建的 cookie = {}".format(session_key))
         self.browser.add_cookie(dict(
             name=settings.SESSION_COOKIE_NAME,
-            value=session_key[0],
+            value=session_key.splitlines()[0],
             path="/",
         ))
 
