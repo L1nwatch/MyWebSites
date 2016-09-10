@@ -24,7 +24,7 @@ def create_session_on_server(host, email):
             "--hide=everything"
         ],
         cwd=THIS_FOLDER
-    ).decode().strip()
+    )#.decode().strip()
     result[0] = result[0].decode().strip()
     return result
 
