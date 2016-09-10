@@ -21,9 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         email = kwargs["email"]
         session_key = create_pre_authenticated_session(email)
-        self.stdout.write(session_key[0])
-        self.stdout.write(session_key[1])
-        self.stdout.write(session_key[2])
+        self.stdout.write(session_key)
 
 
 def create_pre_authenticated_session(email):
@@ -32,7 +30,7 @@ def create_pre_authenticated_session(email):
     session[SESSION_KEY] = user.pk
     session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
     session.save()
-    return session.session_key, session[SESSION_KEY], session[BACKEND_SESSION_KEY]
+    return session.session_key
 
 
 if __name__ == "__main__":
