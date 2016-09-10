@@ -150,7 +150,7 @@ LOGGING = {
         'logfile': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, "../../logfile")
+            'filename': os.path.join(BASE_DIR, "../../log_everything.log")
         },
     },
     'root': {
