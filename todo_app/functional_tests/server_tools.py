@@ -21,11 +21,10 @@ def create_session_on_server(host, email):
             "--host={}:{}".format(host, SSH_PORT),  # 自己的服务器使用 SSH_PORT 端口号
             # 因为这些工作通过 Fabric 和子进程完成，而且在服务器中运行，所以从命令行的输出中提取字符串形式的会话键时一定要格外小心
             # "--hide=everything,status",
-            "--hide=stdout"
+            "--hide=everything"
         ],
         cwd=THIS_FOLDER
     ).decode().strip()
-    print("测试: {}".format(result))
     return result
 
 
@@ -37,4 +36,4 @@ def reset_database(host):
 
 
 if __name__ == "__main__":
-    print(THIS_FOLDER)
+    pass
