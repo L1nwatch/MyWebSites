@@ -22,7 +22,6 @@ class Command(BaseCommand):
         email = kwargs["email"]
         session_key = create_pre_authenticated_session(email)
         self.stdout.write(session_key)
-        self.stdout.write("林丰测试2")
 
 
 def create_pre_authenticated_session(email):
@@ -31,8 +30,7 @@ def create_pre_authenticated_session(email):
     session[SESSION_KEY] = user.pk
     session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
     session.save()
-    print("test")
-    return session.session_key
+    return session.session_key, session[SESSION_KEY], session[BACKEND_SESSION_KEY]
 
 
 if __name__ == "__main__":
