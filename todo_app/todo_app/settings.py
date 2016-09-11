@@ -122,6 +122,30 @@ STATIC_ROOT = os.path.join(BASE_DIR, "../static/")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "todo_app", "static"),)
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+        },
+        "accounts": {
+            "handlers": ["console"],
+        },
+        "lists": {
+            "handlers": ["console"],
+        },
+    },
+    "root": {"level": "INFO"}
+}
+
+# 下面这个是自己测过能用的, 不过没有提供继承
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
@@ -130,34 +154,17 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "todo_app", "static"),)
 #             'level': 'DEBUG',
 #             'class': 'logging.StreamHandler',
 #         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['console'],
+#         'logfile': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, "../../log_everything.log")
 #         },
 #     },
-#     'root': {'level': 'INFO'},
+#     'root': {
+#         'level': 'INFO',
+#         'handlers': ['console', 'logfile']
+#     },
 # }
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
-        'logfile': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, "../../log_everything.log")
-        },
-    },
-    'root': {
-        'level': 'INFO',
-        'handlers': ['console', 'logfile']
-    },
-}
 
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = (

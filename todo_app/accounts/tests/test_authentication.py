@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 为自定义认证写测试
 """
+import logging
 from unittest.mock import patch
 from django.test import TestCase
 from django.conf import settings
@@ -59,6 +60,19 @@ class AuthenticateTest(TestCase):
         new_user = User.objects.get(email="a@b.com")
         self.assertEqual(found_user, new_user)
 
+    def test_logs_non_okay_responses_from_persona(self, mock_post):
+        response_json = {"status": "not okay", "reason": "eg, audience mismatch"}
+        mock_post.return_value_ok = True
+        mock_post.return_value.json.return_value = response_json  # 给测试提供一些数据，触发日志记录器
+
+        logger = logging.getLogger("accounts.authentication")  # 获取正在测试的这个模块的日志记录器
+        # 使用 patch.object 临时模块这个日志记录器的 warning 函数。使用 with 的目的是把这个驭件作为测试目标函数的上下文管理器
+        with patch.object(logger, "warning") as mock_log_warning:
+            self.backend.authenticate("an assertion")
+
+        # 然后可以使用这个驭件声明断言
+        mock_log_warning.assert_called_once_with("Persona says no. Json was: {}".format(response_json))
+
 
 class GetUserTest(TestCase):
     def test_gets_user_by_email(self):
@@ -72,9 +86,7 @@ class GetUserTest(TestCase):
 
     def test_returns_none_if_no_user_with_that_email(self):
         backend = PersonaAuthenticationBackend()
-        self.assertIsNone(
-            backend.get_user("a@b.com")
-        )
+        self.assertIsNone(backend.get_user("a@b.com"))
 
 
 # 重构之前的测试代码
