@@ -247,3 +247,9 @@ class HomePageTest(TestCase):
         response = self.client.get("/")
         # 使用 assertIsInstance 确认视图使用的是正确的表单类
         self.assertIsInstance(response.context["form"], ItemForm)
+
+
+class MyListsTest(TestCase):
+    def test_my_lists_url_renders_my_lists_template(self):
+        response = self.client.get("/lists/users/a@b.com/")
+        self.assertTemplateUsed(response, "my_lists.html")

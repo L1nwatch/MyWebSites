@@ -5,7 +5,6 @@
 跳过认证, 进行功能测试
 """
 from unittest import skip
-import time
 from server_tools import create_session_on_server
 from base import FunctionalTest
 from management.commands.create_session import create_pre_authenticated_session
@@ -44,12 +43,8 @@ class MyListsTest(FunctionalTest):
         # Y 是已登录用户
         self.create_pre_authenticated_session(email)
 
-        self.browser.get(self.server_url)
-        self.wait_to_be_logged_in(email)
-
-    def test_logged_in_users_lists_are_saved_as_my_lists(self):
-        # Y 是已登录用户
-        self.create_pre_authenticated_session("edith@mockmyid.com")
+        # self.browser.get(self.server_url)
+        # self.wait_to_be_logged_in(email)
 
         # 她访问首页，新建一个清单
         self.browser.get(self.server_url)
