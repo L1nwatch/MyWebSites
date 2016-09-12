@@ -68,16 +68,6 @@ class MyListsTest(FunctionalTest):
         # 在 My Lists 页面，这个新建的清单也显示出来了
         self.browser.find_element_by_link_text("My Lists").click()
         self.browser.find_element_by_link_text("Click cows").click()
-        self.assertEqual(self.browser.current_url, first_list_url)
-
-        # 她决定再建一个清单试试
-        self.browser.get(self.server_url)
-        self.get_item_input_box().send_keys("Click cows\n")
-        second_list_url = self.browser.current_url
-
-        # 在 My Lists 页面，这个新增的清单也显示出来了
-        self.browser.find_element_by_link_text("My Lists").click()
-        self.browser.find_element_by_link_text("CLick cows").click()
         self.assertEqual(self.browser.current_url, second_list_url)
 
         # 她退出后, My Lists 链接不见了
