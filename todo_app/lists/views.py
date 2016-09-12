@@ -9,8 +9,11 @@ from lists.models import Item, List
 
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
+from django.contrib.auth import get_user_model
 
 __author__ = '__L1n__w@tch'
+
+User = get_user_model()
 
 
 # Create your views here.
@@ -45,7 +48,10 @@ def new_list(request):
 
     # 使用 form.is_valid() 判断提交是否成功
     if form.is_valid():
-        list_ = List.objects.create()
+        # list_ = List.objects.create()
+        list_ = List()
+        list_.owner = request.user
+        list_.save()
         form.save(for_list=list_)
         # Item.objects.create(text=request.POST["text"], list_attr=list_)
         return redirect(list_)
@@ -55,7 +61,8 @@ def new_list(request):
 
 
 def my_lists(request, email):
-    return render(request, "my_lists.html")
+    owner = User.objects.get(email=email)
+    return render(request, "my_lists.html", {"owner": owner})
 
 
 if __name__ == "__main__":
