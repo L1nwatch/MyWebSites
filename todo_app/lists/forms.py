@@ -49,5 +49,9 @@ class ExistingListItemForm(ItemForm):
         return forms.models.ModelForm.save(self)
 
 
+class NewListForm(object):
+    pass
+
+
 if __name__ == "__main__":
     pass

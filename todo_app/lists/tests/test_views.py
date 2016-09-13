@@ -6,7 +6,7 @@
 对首页视图进行单元测试
 """
 
-from unittest import skip
+import unittest
 from unittest.mock import Mock, patch
 
 from django.test import TestCase
@@ -15,7 +15,7 @@ from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
 from lists.models import Item, List
-from lists.views import new_list
+from lists.views import new_list, new_list2
 from lists.forms import ItemForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR, ExistingListItemForm
 
 __author__ = '__L1n__w@tch'
@@ -218,8 +218,21 @@ class NewListTest(TestCase):
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(List.objects.count(), 0)
 
+
+# 本来说是要把整个 NewListTest 重命名的, 不过我想想还是算了吧
+class NewListViewIntegratedTest(TestCase):
+    @unittest.skip
+    def test_list_owner_is_saved_if_user_is_authenticated(self):
+        request = HttpRequest()
+        request.user = User.objects.create(email="a@b.com")
+        request.POST["text"] = "new list item"
+        new_list(request)
+        list_ = List.objects.first()
+        self.assertEqual(list_.owner, request.user)
+
+    @unittest.skip  # 尝试使用驭件保存属主的测试, 太过复杂, 用上面这个替代
     @patch("lists.views.List")  # 模拟 List 模型的功能，获取视图创建的任何一个清单
-    def test_list_owner_is_saved_if_user_is_authenticated(self, mockList):
+    def test_mock_list_owner_is_saved_if_user_is_authenticated(self, mockList):
         # 为视图创建一个真实的 List 对象。List 对象必须真实，否则视图尝试保存 Item 对象时会遇到外键错误(表明这个测试只是部分隔离)
         mock_list = List.objects.create()
         mock_list.save = Mock()
@@ -255,6 +268,53 @@ class NewListTest(TestCase):
         #     new_list(request)
         #     list_ = List.objects.first()
         #     self.assertEqual(list_.owner, request.user)
+
+
+@patch("lists.views.NewListForm")  # 模拟 NewListForm 类。类中的所有测试方法都会用到这个驭件，所以在类上模拟
+# 使用 Django 提供的 TestCase 类太容易写成整合测试。为了确保写出纯粹隔离的单元测试，只能使用 unittest.TestCase
+class NewListViewUnitTest(unittest.TestCase):
+    def setUp(self):
+        self.request = HttpRequest()
+        # 在 setUp 方法中手动创建了一个简单的 POST 请求，没有使用(太过整合的) Django 测试客户端
+        self.request.POST["text"] = "new list item"
+        self.request.user = Mock()
+
+    def test_passes_POST_data_to_NewListForm(self, mockNewListForm):
+        new_list2(self.request)
+        # 然后检查视图要做的第一件事：在视图中使用正确的构造方法初始化它的协作者，即 NewListForm，传入的数据从请求中读取
+        mockNewListForm.assert_called_once_with(data=self.request.POST)
+
+    def test_saves_form_with_owner_if_form_valid(self, mockNewListForm):
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = True
+        new_list2(self.request)
+        mock_form.save.assert_called_once_with(owner=self.request.user)
+
+    @patch("lists.views.redirect")  # 模拟 redirect 函数，这次直接在方法上模拟
+    # patch 修饰器先应用最内层的那个，所以这个驭件在 mockNewListForm 之前传入方法
+    def test_redirects_to_form_returned_object_if_form_valid(self, mock_redirect, mockNewListForm):
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = True  # 指定测试的是表单中数据有效的情况
+
+        response = new_list2(self.request)
+
+        self.assertEqual(response, mock_redirect.return_value)  # 检查视图的响应是否为 redirect 函数的结果
+        # 然后检查调用 redirect 函数时传入的参数是否为在表单上调用 save 方法得到的对象
+        mock_redirect.assert_called_once_with(mock_form.save.return_value)
+
+    @patch("lists.views.render")
+    def test_renders_home_template_with_form_if_form_invalid(self, mock_render, mockNewListForm):
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = False
+        response = new_list2(self.request)
+        self.assertEqual(response, mock_render.return_value)
+        mock_render.assert_called_once_with(self.request, "home.html", {"form": mock_form})
+
+    def test_does_not_save_if_form_invalid(self, mockNewListForm):
+        mock_form = mockNewListForm.return_value
+        mock_form.is_valid.return_value = False
+        new_list2(self.request)
+        self.assertFalse(mock_form.save.called)
 
 
 class HomePageTest(TestCase):

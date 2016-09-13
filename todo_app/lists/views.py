@@ -4,7 +4,7 @@
 """
 负责编写视图的地方
 """
-from lists.forms import ItemForm, ExistingListItemForm
+from lists.forms import ItemForm, ExistingListItemForm, NewListForm
 from lists.models import Item, List
 
 from django.core.exceptions import ValidationError
@@ -40,6 +40,14 @@ def view_list(request, list_id):
             # except ValidationError:
             #     error = "You can't have an empty list item"
     return render(request, "list.html", {"list_attr": list_, "form": form})
+
+
+def new_list2(request):
+    form = NewListForm(data=request.POST)
+    if form.is_valid():
+        list_ = form.save(owner=request.user)
+        return redirect(list_)
+    return render(request, "home.html", {"form": form})
 
 
 def new_list(request):
