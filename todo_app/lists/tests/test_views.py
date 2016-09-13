@@ -7,6 +7,8 @@
 """
 
 from unittest import skip
+from unittest.mock import Mock, patch
+
 from django.test import TestCase
 from django.utils.html import escape
 from django.http import HttpRequest
@@ -216,13 +218,43 @@ class NewListTest(TestCase):
         self.assertEqual(List.objects.count(), 0)
         self.assertEqual(List.objects.count(), 0)
 
-    def test_list_owner_is_saved_if_user_is_authenticated(self):
+    @patch("lists.views.List")  # 模拟 List 模型的功能，获取视图创建的任何一个清单
+    def test_list_owner_is_saved_if_user_is_authenticated(self, mockList):
+        # 为视图创建一个真实的 List 对象。List 对象必须真实，否则视图尝试保存 Item 对象时会遇到外键错误(表明这个测试只是部分隔离)
+        mock_list = List.objects.create()
+        mock_list.save = Mock()
+        mockList.return_value = mock_list
         request = HttpRequest()
-        request.user = User.objects.create(email="a@b.com")
+        request.user = User.objects.create()  # 给 requests 对象赋值一个真实的用户
         request.POST["text"] = "new list item"
         new_list(request)
-        list_ = List.objects.first()
-        self.assertEqual(list_.owner, request.user)
+        self.assertEqual(mock_list.owner, request.user)  # 现在可以声明断言，判断清单对象是否设定了 .owner 属性
+
+        mock_list = List.objects.create()
+        mock_list.save = Mock()
+        mockList.return_value = mock_list
+        request = HttpRequest()
+        request.user = Mock()
+        request.user.is_authenticated.return_value = True
+        request.POST["text"] = "new list item"
+
+        # 定义一个函数，在这个函数中就希望先发生的事件声明断言，即检查是否设定了清单的属主
+        def check_owner_assigned():
+            self.assertEqual(mock_list.owner, request.user)
+
+        # 把这个检查函数赋值给后续事件的 side_effect 属性。当视图在驭件上调用 save 方法时，才会执行其中的断言。要保证在测试的目标函数调用前完成此次赋值
+        mock_list.save.side_effect = check_owner_assigned
+        new_list(request)
+        # 最后，要确保设定了 side_effect 属性的函数一定会被调用，也就是要调用 .save() 方法。否则断言永远不会运行
+        mock_list.save.assert_called_once_with()
+
+        # def test_list_owner_is_saved_if_user_is_authenticated(self):
+        #     request = HttpRequest()
+        #     request.user = User.objects.create(email="a@b.com")
+        #     request.POST["text"] = "new list item"
+        #     new_list(request)
+        #     list_ = List.objects.first()
+        #     self.assertEqual(list_.owner, request.user)
 
 
 class HomePageTest(TestCase):
