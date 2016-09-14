@@ -5,8 +5,9 @@
 表单
 """
 from django import forms
-from lists.models import Item
 from django.core.exceptions import ValidationError
+
+from lists.models import Item, List
 
 __author__ = '__L1n__w@tch'
 
@@ -49,7 +50,7 @@ class ExistingListItemForm(ItemForm):
         return forms.models.ModelForm.save(self)
 
 
-class NewListForm(object):
+class NewListForm(ItemForm):
     pass
 
 

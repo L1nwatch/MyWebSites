@@ -16,7 +16,7 @@ from django.contrib.auth import get_user_model
 
 from lists.models import Item, List
 from lists.views import new_list, new_list2
-from lists.forms import ItemForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR, ExistingListItemForm
+from lists.forms import ItemForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR, ExistingListItemForm, NewListForm
 
 __author__ = '__L1n__w@tch'
 
@@ -315,6 +315,28 @@ class NewListViewUnitTest(unittest.TestCase):
         mock_form.is_valid.return_value = False
         new_list2(self.request)
         self.assertFalse(mock_form.save.called)
+
+
+@unittest.skip
+class NewListFormTest(unittest.TestCase):
+    # 为表单模拟两个来自下部模型层的协作者
+    @patch("lists.forms.List")
+    @patch("lists.forms.Item")
+    def test_save_creates_new_list_and_item_from_post_data(self, mockItem, mockList):
+        mock_item = mockItem.return_value
+        mock_list = mockList.return_value
+        user = Mock()
+        form = NewListForm(data={"text": "new item text"})
+        form.is_valid()  # 必须调用 is_valid 方法，这样表单才会把通过验证的数据存储到 .cleaned_data 字典中
+
+        def check_item_text_and_list():
+            self.assertEqual(mock_item.text, "new item text")
+            self.assertEqual(mock_item.list, mock_list)
+            self.assertTrue(mock_list.save.called)
+            mock_item.save.side_effect = check_item_text_and_list  # 使用 side_effect 方法确保保存新待办事项对象时，使用已经保存的清单，而且待办事项中的文本正确
+            form.save(owner=user)
+
+        self.assertTrue(mock_item.save.called)  # 再次确认调用了副作用函数
 
 
 class HomePageTest(TestCase):
