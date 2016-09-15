@@ -221,12 +221,11 @@ class NewListTest(TestCase):
 
 # 本来说是要把整个 NewListTest 重命名的, 不过我想想还是算了吧
 class NewListViewIntegratedTest(TestCase):
-    @unittest.skip
     def test_list_owner_is_saved_if_user_is_authenticated(self):
         request = HttpRequest()
         request.user = User.objects.create(email="a@b.com")
         request.POST["text"] = "new list item"
-        new_list(request)
+        new_list2(request)
         list_ = List.objects.first()
         self.assertEqual(list_.owner, request.user)
 
@@ -300,6 +299,7 @@ class NewListViewUnitTest(unittest.TestCase):
 
         self.assertEqual(response, mock_redirect.return_value)  # 检查视图的响应是否为 redirect 函数的结果
         # 然后检查调用 redirect 函数时传入的参数是否为在表单上调用 save 方法得到的对象
+        # 模拟的 form.save 方法返回一个对象，我们希望在视图中使用这个对象。
         mock_redirect.assert_called_once_with(mock_form.save.return_value)
 
     @patch("lists.views.render")
