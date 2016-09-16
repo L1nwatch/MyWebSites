@@ -4,14 +4,15 @@
 
 {% block extra_content %}
     <h2>
-        {# 需要一个名为 owner 的变量，在模板中表示用户#}
+        {#        <!-- 需要一个名为 owner 的变量，在模板中表示用户 -->#}
         {{ owner.email }}'s lists
     </h2>
     <ul>
-        {# 想使用 owner.list_set.all 遍历用户创建的清单(ORM 提供了这个属性)#}
+        {#        <!-- 想使用 owner.list_set.all 遍历用户创建的清单(ORM 提供了这个属性) -->#}
         {% for list in owner.list_set.all %}
-            {# 想使用 list.name 获取清单的名字，目前清单以其中的第一个待办事项命名 #}
+            {#            <!-- 想使用 list.name 获取清单的名字，目前清单以其中的第一个待办事项命名 -->#}
             <li><a href="{{ list.get_absolute_url }}">{{ list.name }}</a></li>
+
         {% endfor %}
     </ul>
 {% endblock %}
