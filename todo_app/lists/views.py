@@ -4,7 +4,7 @@
 """
 负责编写视图的地方
 """
-from lists.forms import ItemForm, ExistingListItemForm
+from lists.forms import ItemForm, ExistingListItemForm, NewListForm
 from lists.models import Item, List
 
 from django.core.exceptions import ValidationError
@@ -43,22 +43,30 @@ def view_list(request, list_id):
 
 
 def new_list(request):
-    # 把 request.POST 中的数据传给表单的构造方法
-    form = ItemForm(data=request.POST)
-
-    # 使用 form.is_valid() 判断提交是否成功
+    form = NewListForm(data=request.POST)
     if form.is_valid():
-        # list_ = List.objects.create()
-        list_ = List()
-        if request.user.is_authenticated():
-            list_.owner = request.user
-        list_.save()
-        form.save(for_list=list_)
-        # Item.objects.create(text=request.POST["text"], list_attr=list_)
+        list_ = form.save(owner=request.user)
         return redirect(list_)
-    else:
-        # 如果提交失败，把表单对象传入模板，而不显示一个硬编码的错误消息字符串
-        return render(request, "home.html", {"form": form})
+    return render(request, "home.html", {"form": form})
+
+
+# def new_list(request):
+## 把 request.POST 中的数据传给表单的构造方法
+# form = ItemForm(data=request.POST)
+
+## 使用 form.is_valid() 判断提交是否成功
+# if form.is_valid():
+## list_ = List.objects.create()
+# list_ = List()
+# if request.user.is_authenticated():
+#     list_.owner = request.user
+# list_.save()
+# form.save(for_list=list_)
+## Item.objects.create(text=request.POST["text"], list_attr=list_)
+# return redirect(list_)
+# else:
+## 如果提交失败，把表单对象传入模板，而不显示一个硬编码的错误消息字符串
+# return render(request, "home.html", {"form": form})
 
 
 def my_lists(request, email):
