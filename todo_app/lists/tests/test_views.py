@@ -15,7 +15,7 @@ from django.http import HttpRequest
 from django.contrib.auth import get_user_model
 
 from lists.models import Item, List
-from lists.views import new_list, new_list2
+from lists.views import new_list
 from lists.forms import ItemForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR, ExistingListItemForm, NewListForm
 
 __author__ = '__L1n__w@tch'
@@ -225,7 +225,7 @@ class NewListViewIntegratedTest(TestCase):
         request = HttpRequest()
         request.user = User.objects.create(email="a@b.com")
         request.POST["text"] = "new list item"
-        new_list2(request)
+        new_list(request)
         list_ = List.objects.first()
         self.assertEqual(list_.owner, request.user)
 
@@ -279,14 +279,14 @@ class NewListViewUnitTest(unittest.TestCase):
         self.request.user = Mock()
 
     def test_passes_POST_data_to_NewListForm(self, mockNewListForm):
-        new_list2(self.request)
+        new_list(self.request)
         # 然后检查视图要做的第一件事：在视图中使用正确的构造方法初始化它的协作者，即 NewListForm，传入的数据从请求中读取
         mockNewListForm.assert_called_once_with(data=self.request.POST)
 
     def test_saves_form_with_owner_if_form_valid(self, mockNewListForm):
         mock_form = mockNewListForm.return_value
         mock_form.is_valid.return_value = True
-        new_list2(self.request)
+        new_list(self.request)
         mock_form.save.assert_called_once_with(owner=self.request.user)
 
     @patch("lists.views.redirect")  # 模拟 redirect 函数，这次直接在方法上模拟
@@ -295,7 +295,7 @@ class NewListViewUnitTest(unittest.TestCase):
         mock_form = mockNewListForm.return_value
         mock_form.is_valid.return_value = True  # 指定测试的是表单中数据有效的情况
 
-        response = new_list2(self.request)
+        response = new_list(self.request)
 
         self.assertEqual(response, mock_redirect.return_value)  # 检查视图的响应是否为 redirect 函数的结果
         # 然后检查调用 redirect 函数时传入的参数是否为在表单上调用 save 方法得到的对象
@@ -306,14 +306,14 @@ class NewListViewUnitTest(unittest.TestCase):
     def test_renders_home_template_with_form_if_form_invalid(self, mock_render, mockNewListForm):
         mock_form = mockNewListForm.return_value
         mock_form.is_valid.return_value = False
-        response = new_list2(self.request)
+        response = new_list(self.request)
         self.assertEqual(response, mock_render.return_value)
         mock_render.assert_called_once_with(self.request, "home.html", {"form": mock_form})
 
     def test_does_not_save_if_form_invalid(self, mockNewListForm):
         mock_form = mockNewListForm.return_value
         mock_form.is_valid.return_value = False
-        new_list2(self.request)
+        new_list(self.request)
         self.assertFalse(mock_form.save.called)
 
 

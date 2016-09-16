@@ -33,6 +33,8 @@ class ItemFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["text"], [EMPTY_LIST_ERROR])
 
+    # 以前针对 ItemForm 类中 save 方法的测试删掉
+    @unittest.skip
     def test_form_save_handles_saving_to_a_list(self):
         list_ = List.objects.create()
         form = ItemForm(data={"text": "do me"})
