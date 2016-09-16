@@ -4,7 +4,7 @@
 """
 这个是负责测试新到来的访问者的
 """
-from base import FunctionalTest
+from .base import FunctionalTest
 from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 

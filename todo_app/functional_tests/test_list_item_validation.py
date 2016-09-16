@@ -5,7 +5,7 @@
 针对用户输入的合法性进行测试
 """
 from unittest import skip
-from base import FunctionalTest
+from .base import FunctionalTest
 
 __author__ = '__L1n__w@tch'
 

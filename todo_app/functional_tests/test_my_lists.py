@@ -6,8 +6,8 @@
 """
 from unittest import skip
 from server_tools import create_session_on_server
-from base import FunctionalTest
-from management.commands.create_session import create_pre_authenticated_session
+from .base import FunctionalTest
+from .management.commands.create_session import create_pre_authenticated_session
 
 from django.conf import settings
 from django.contrib.auth import get_user_model

@@ -5,7 +5,7 @@
 """
 # functional_tests/test_login.py
 from unittest import skip
-from base import FunctionalTest
+from .base import FunctionalTest
 import time
 
 __author__ = '__L1n__w@tch'

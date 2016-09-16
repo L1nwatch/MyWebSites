@@ -4,7 +4,7 @@
 """
 针对布局和样式的功能测试
 """
-from base import FunctionalTest
+from .base import FunctionalTest
 
 __author__ = '__L1n__w@tch'
 
