@@ -5,7 +5,7 @@
 跳过认证, 进行功能测试
 """
 from unittest import skip
-from server_tools import create_session_on_server
+from .server_tools import create_session_on_server
 from .base import FunctionalTest
 from .management.commands.create_session import create_pre_authenticated_session
 

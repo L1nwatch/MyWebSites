@@ -7,7 +7,7 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from server_tools import reset_database
+from .server_tools import reset_database
 
 __author__ = '__L1n__w@tch'
 
