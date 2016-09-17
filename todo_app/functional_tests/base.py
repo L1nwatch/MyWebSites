@@ -4,10 +4,19 @@
 """ 各个功能测试的基类
 """
 import sys
+import os
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .server_tools import reset_database
+
+from datetime import datetime
+
+SCREEN_DUMP_LOCATION = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "screendumps")
+)
 
 __author__ = '__L1n__w@tch'
 
@@ -60,7 +69,45 @@ class FunctionalTest(StaticLiveServerTestCase):
         :return:
         """
         # 她很满意, 去睡觉了
+        # self.browser.quit()
+        # 接下来要添加截图功能
+
+        if self._test_has_failed():
+            if not os.path.exists(SCREEN_DUMP_LOCATION):
+                os.makedirs(SCREEN_DUMP_LOCATION)
+            for ix, handle in enumerate(self.browser.window_handles):
+                self._windowid = ix
+                self.browser.switch_to.window(handle)
+                self.take_screenshot()
+                self.dump_html()
         self.browser.quit()
+        super().tearDown()
+
+    def _test_has_failed(self):
+        # 针对 3.4。在 3.3 中可以直接使用 self._outcomeForDoCleanups.success:
+        for method, error in self._outcome.errors:
+            if error:
+                return True
+        return False
+
+    def take_screenshot(self):
+        filename = self._get_filename() + ".png"
+        print("screenshotting to", filename)
+        self.browser.get_screenshot_as_file(filename)
+
+    def dump_html(self):
+        filename = self._get_filename() + ".html"
+        print("dumping page HTML to", filename)
+        with open(filename, "w") as f:
+            f.write(self.browser.page_source)
+
+    def _get_filename(self):
+        timestamp = datetime.now().isoformat().replace(":", ".")[:19]
+        return "{folder}/{classname}.{method}-window{windowid}-{timestamp}".format(folder=SCREEN_DUMP_LOCATION,
+                                                                                   classname=self.__class__.__name__,
+                                                                                   method=self._testMethodName,
+                                                                                   windowid=self._windowid,
+                                                                                   timestamp=timestamp)
 
     def check_for_row_in_list_table(self, row_text):
         """
