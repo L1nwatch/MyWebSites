@@ -4,10 +4,12 @@
 """
 跳过认证, 进行功能测试
 """
+import time
 from unittest import skip
 from .server_tools import create_session_on_server
-from .base import FunctionalTest
+from .base import FunctionalTest, DEFAULT_WAIT
 from .management.commands.create_session import create_pre_authenticated_session
+from selenium.common.exceptions import WebDriverException
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -58,7 +60,10 @@ class MyListsTest(FunctionalTest):
         # 她看到这个页面中有她创建的清单
         # 而且清单根据第一个待办事项命名
         self.browser.find_element_by_link_text("Reticulate splines").click()
-        self.assertEqual(self.browser.current_url, first_list_url)
+        # self.assertEqual(self.browser.current_url, first_list_url) # 可能出现资源竞争
+        self.wait_for(
+            lambda: self.assertEqual(self.browser.current_url, first_list_url)
+        )
 
         # 她决定再建一个清单试试
         self.browser.get(self.server_url)
@@ -73,6 +78,16 @@ class MyListsTest(FunctionalTest):
         # 她退出后, My Lists 链接不见了
         self.browser.find_element_by_id("id_logout").click()
         self.assertEqual(self.browser.find_elements_by_link_text("My Lists"), [])
+
+    def wait_for(self, function_with_assertion, timeout=DEFAULT_WAIT):
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                return function_with_assertion()
+            except (AssertionError, WebDriverException):
+                time.sleep(0.1)
+        # 再试一次，如果还不行就抛出所有异常
+        return function_with_assertion()
 
 
 if __name__ == "__main__":

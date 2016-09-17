@@ -14,6 +14,7 @@ from .server_tools import reset_database
 
 from datetime import datetime
 
+DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "screendumps")
 )
@@ -59,7 +60,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         if self.against_staging:
             reset_database(self.server_host)
         self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(3)  # 等待 3 秒钟
+        self.browser.implicitly_wait(DEFAULT_WAIT)  # 等待 DEFAULT_WAIT 秒钟
 
     def tearDown(self):
         """
