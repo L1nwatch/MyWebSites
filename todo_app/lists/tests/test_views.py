@@ -339,6 +339,13 @@ class NewListFormTest(unittest.TestCase):
         self.assertTrue(mock_item.save.called)  # 再次确认调用了副作用函数
 
 
+class ShareListTest(TestCase):
+    def test_post_redirects_to_lists_page(self):
+        list1 = List.objects.create()
+        response = self.client.post("/lists/{}/share".format(list1.id), data={"email": "test2@email.com"})
+        self.assertRedirects(response, list1.get_absolute_url())
+
+
 class HomePageTest(TestCase):
     maxDiff = None  # 默认情况下会解决较长的差异，需要进行设置
 

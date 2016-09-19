@@ -16,7 +16,11 @@ __author__ = '__L1n__w@tch'
 User = get_user_model()
 
 
-# Create your views here.
+def share_list(request, list_id):
+    list_ = List.objects.get(id=list_id)
+    return redirect(list_)
+
+
 def home_page(request):
     return render(request, "home.html", {"form": ItemForm()})
 

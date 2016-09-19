@@ -7,7 +7,19 @@
 {% block table %}
     <table id="id_list_table" class="table">
         {% for item in list_attr.item_set.all %}
-            <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
+            <tr>
+                <td>{{ forloop.counter }}: {{ item.text }}</td>
+            </tr>
         {% endfor %}
     </table>
+{% endblock %}
+
+{% block extra_content %}
+    <div class="col-md-4 col-md-offset-1">
+        <h3>Share this list:</h3>
+        <form class="form-inline" method="POST"> action="{% url 'share_list' list_attr.id%}">
+            {% csrf_token %}
+            <input name="email" placeholder="your-friend@example.com"/>
+        </form>
+    </div>
 {% endblock %}

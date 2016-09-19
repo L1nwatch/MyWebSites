@@ -25,8 +25,8 @@ class HomePage(object):
     # 这是用于新建清单的方法。访问首页，找到输入框，再按回车键。然后等待一段时间，确保交互完成。不过可以看出，这次等待其实发生在另一个页面对象中
     def start_new_list(self, item_text):
         self.go_to_home_page()
-        inputbox = self.get_item_input()
-        inputbox.send_keys(item_text + "\n")
+        input_box = self.get_item_input()
+        input_box.send_keys(item_text + "\n")
         # ListPage 稍后定义，初始化的方式类似于 HomePage
         list_page = ListPage(self.test)
         # 调用 ListPage 类中的 wait_for_new_item_in_list 方法，指定期望看到的待办事项文本以及在清单中的排位
