@@ -5,9 +5,11 @@
 """
 import sys
 import os
+import time
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import WebDriverException
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
@@ -162,6 +164,16 @@ class FunctionalTest(StaticLiveServerTestCase):
             value=session_key,
             path="/",
         ))
+
+    def wait_for(self, function_with_assertion, timeout=DEFAULT_WAIT):
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                return function_with_assertion()
+            except (AssertionError, WebDriverException):
+                time.sleep(0.1)
+        # 再试一次，如果还不行就抛出所有异常
+        return function_with_assertion()
 
 
 if __name__ == "__main__":

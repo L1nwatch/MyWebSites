@@ -6,6 +6,7 @@
 """
 from selenium import webdriver
 from .base import FunctionalTest
+from .home_and_list_pages import HomePage
 import unittest
 
 __author__ = '__L1n__w@tch'
@@ -33,12 +34,42 @@ class SharingTest(FunctionalTest):
 
         # Y 访问首页，新建一个清单
         self.browser = edith_browser
-        self.browser.get(self.server_url)
-        self.get_item_input_box().send_keys("Get help\n")
+        # self.browser.get(self.server_url)
+        # 与网站交互
+        list_page = HomePage(self).start_new_list("Get help")
+
+        # 她看到”分享这个清单“选项
+        share_box = list_page.get_share_box()
+        self.assertEqual(
+            share_box.get_attribute("placeholder"),
+            "your-friend@example.com"
+        )
+
+        # 她分享自己的清单之后，页面更新了
+        # 提示已经分享给 Oniciferous
+        list_page.share_list_with("oniciferous@example.com")
+
+        # 现在 Oniciferous 在他的浏览器中访问清单页面
+        self.browser = oni_browser
+        HomePage(self).go_to_home_page().go_to_my_lists_page()
+
+        # 他看到了 Y 分享的清单
+        self.browser.find_element_by_link_text("Get help").click()
 
         # 她看到“分享这个清单”选项
-        share_box = self.browser.find_element_by_css_selector("input[name=email]")
-        self.assertEqual(share_box.get_attribute("placeholder"), "your-friend@example.com")
+        # 猜想页面更新后的状态
+        # self.wait_for(
+        #     lambda: self.assertEqual(
+        #         self.browser.find_element_by_css_selector(
+        #             "input[name=email]"
+        #         ).get_attribute("placeholder"),
+        #         "your-friend@example.com"
+        #     )
+        # )
+        # share_box = self.browser.find_element_by_css_selector("input[name=email]")
+        # self.assertEqual(share_box.get_attribute("placeholder"), "your-friend@example.com")
+        # self.browser = edith_browser
+        pass
 
 
 if __name__ == "__main__":

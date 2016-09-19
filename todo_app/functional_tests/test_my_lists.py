@@ -4,12 +4,11 @@
 """
 跳过认证, 进行功能测试
 """
-import time
+
 from unittest import skip
 
-from .base import FunctionalTest, DEFAULT_WAIT
-
-from selenium.common.exceptions import WebDriverException
+from .base import FunctionalTest
+from .home_and_list_pages import HomePage
 
 from django.contrib.auth import get_user_model
 
@@ -54,23 +53,14 @@ class MyListsTest(FunctionalTest):
         second_list_url = self.browser.current_url
 
         # 在 My Lists 页面，这个新建的清单也显示出来了
-        self.browser.find_element_by_link_text("My Lists").click()
+        # self.browser.find_element_by_link_text("My Lists").click()
+        HomePage(self).go_to_my_lists_page()
         self.browser.find_element_by_link_text("Click cows").click()
         self.assertEqual(self.browser.current_url, second_list_url)
 
         # 她退出后, My Lists 链接不见了
         self.browser.find_element_by_id("id_logout").click()
         self.assertEqual(self.browser.find_elements_by_link_text("My Lists"), [])
-
-    def wait_for(self, function_with_assertion, timeout=DEFAULT_WAIT):
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            try:
-                return function_with_assertion()
-            except (AssertionError, WebDriverException):
-                time.sleep(0.1)
-        # 再试一次，如果还不行就抛出所有异常
-        return function_with_assertion()
 
 
 if __name__ == "__main__":
