@@ -1,8 +1,9 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # version: Python3.X
-""" Description
+""" 实现页面模式
 """
+ITEM_INPUT_ID = "id_text"
 
 __author__ = '__L1n__w@tch'
 
@@ -39,6 +40,9 @@ class HomePage(object):
             "My Lists"
         ))
 
+    def get_item_input(self):
+        return self.test.browser.find_element_by_id(ITEM_INPUT_ID)
+
 
 class ListPage(object):
     def __init__(self, test):
@@ -63,6 +67,17 @@ class ListPage(object):
     def share_list_with(self, email):
         self.get_share_box().send_keys(email + "\n")
         self.test.wait_for(lambda: self.test.assertIn(email, [item.text for item in self.get_shared_with_list()]))
+
+    def get_item_input(self):
+        return self.test.browser.find_element_by_id(ITEM_INPUT_ID)
+
+    def add_new_item(self, item_text):
+        current_pos = len(self.get_list_table_rows())
+        self.get_item_input().send_keys(item_text + "\n")
+        self.wait_for_new_item_in_list(item_text, current_pos + 1)
+
+    def get_list_owner(self):
+        return self.test.browser.find_element_by_id("id_list_owner").text
 
 
 if __name__ == "__main__":

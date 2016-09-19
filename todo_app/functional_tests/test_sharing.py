@@ -56,6 +56,20 @@ class SharingTest(FunctionalTest):
         # 他看到了 Y 分享的清单
         self.browser.find_element_by_link_text("Get help").click()
 
+        # 在清单页面，Oniciferous 看到这个清单属于 Y
+        self.wait_for(lambda: self.assertEqual(
+            list_page.get_list.owner(),
+            'edith@example.com'
+        ))
+
+        # 他在这个清单中添加一个待办事项
+        list_page.add_new_item("Hi Edith!")
+
+        # Y 刷新页面后，看到 Oniciferous 添加的内容
+        self.browser = edith_browser
+        self.browser.refresh()
+        list_page.wait_for_new_item_in_list("Hi Edith!", 2)
+
         # 她看到“分享这个清单”选项
         # 猜想页面更新后的状态
         # self.wait_for(
