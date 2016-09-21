@@ -19,9 +19,6 @@ class HomePage(object):
         self.test.wait_for(self.get_item_input)
         return self  # 返回 self 只是为了操作方便。这么做可以使用方法串接 https://en.wikipedia.org/wiki/ Method_chaining
 
-    def get_item_input(self):
-        return self.test.browser.find_element_by_id("id_text")
-
     # 这是用于新建清单的方法。访问首页，找到输入框，再按回车键。然后等待一段时间，确保交互完成。不过可以看出，这次等待其实发生在另一个页面对象中
     def start_new_list(self, item_text):
         self.go_to_home_page()
@@ -62,7 +59,7 @@ class ListPage(object):
         return self.test.browser.find_element_by_css_selector("input[name=email]")
 
     def get_shared_with_list(self):
-        return self.test.browser.find_element_by_css_selector(".list-sharee")
+        return self.test.browser.find_elements_by_css_selector(".list-shared")
 
     def share_list_with(self, email):
         self.get_share_box().send_keys(email + "\n")

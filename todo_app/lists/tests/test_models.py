@@ -50,6 +50,15 @@ class ListModelTest(TestCase):
         Item.objects.create(list_attr=list_, text="second item")
         self.assertEqual(list_.name, "first item")
 
+    def test_shared_wtih_add_and_all(self):
+        # 检查清单能否响应 shared_with.add 方法
+        list1 = List.objects.create()
+        test_email = "test@email.com"
+        user = User.objects.create(email=test_email)
+        list1.shared_with.add(test_email)
+        list_in_db = List.objects.get(id=list1.id)
+        self.assertIn(user, list_in_db.shared_with.all())
+
 
 class ItemModelTest(TestCase):
     def test_default_text(self):

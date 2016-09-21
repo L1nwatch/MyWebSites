@@ -12,14 +12,28 @@
             </tr>
         {% endfor %}
     </table>
+
+    {% if list_attr.owner %}
+        <p>List owner: <span id="id_list_owner">{{ list_attr.owner.email }}</span><p>
+    {% endif %}
 {% endblock %}
 
 {% block extra_content %}
-    <div class="col-md-4 col-md-offset-1">
-        <h3>Share this list:</h3>
-        <form class="form-inline" method="POST"> action="{% url 'share_list' list_attr.id%}">
-            {% csrf_token %}
-            <input name="email" placeholder="your-friend@example.com"/>
-        </form>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Shared with</h3>
+            {% for has_shared in list_attr.shared_with.all %}
+                <li class="list-shared">{{ has_shared.email }}</li>
+            {% endfor %}
+        </div>
+
+
+        <div class="col-md-4 col-md-offset-1">
+            <h3>Share this list:</h3>
+            <form class="form-inline" method="POST" action="{% url 'share_list' list_attr.id %}">
+                {% csrf_token %}
+                <input name="email" placeholder="your-friend@example.com"/>
+            </form>
+        </div>
     </div>
 {% endblock %}

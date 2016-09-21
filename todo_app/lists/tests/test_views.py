@@ -345,6 +345,12 @@ class ShareListTest(TestCase):
         response = self.client.post("/lists/{}/share".format(list1.id), data={"email": "test2@email.com"})
         self.assertRedirects(response, list1.get_absolute_url())
 
+    def test_post_share_email_correct(self):
+        user = User.objects.create(email="test@email.com")
+        list1 = List.objects.create()
+        response = self.client.post("/lists/{}/share".format(list1.id), data={"email": user.email})
+        self.assertIn(user, list1.shared_with.all())
+
 
 class HomePageTest(TestCase):
     maxDiff = None  # 默认情况下会解决较长的差异，需要进行设置

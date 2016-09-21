@@ -58,7 +58,7 @@ class SharingTest(FunctionalTest):
 
         # 在清单页面，Oniciferous 看到这个清单属于 Y
         self.wait_for(lambda: self.assertEqual(
-            list_page.get_list.owner(),
+            list_page.get_list_owner(),
             'edith@example.com'
         ))
 

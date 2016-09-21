@@ -9,10 +9,18 @@
     </h2>
     <ul>
         {#        <!-- 想使用 owner.list_set.all 遍历用户创建的清单(ORM 提供了这个属性) -->#}
-        {% for list in owner.list_set.all %}
+        {% for list_attr in owner.list_set.all %}
             {#            <!-- 想使用 list.name 获取清单的名字，目前清单以其中的第一个待办事项命名 -->#}
-            <li><a href="{{ list.get_absolute_url }}">{{ list.name }}</a></li>
+            <li><a href="{{ list_attr.get_absolute_url }}">{{ list_attr.name }}</a></li>
 
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for list_attr in owner.lists_want_to_share.all %}
+            <li>
+                <a href="{{ list_attr.get_absolute_url }}">{{ list_attr.name }}</a>
+                ({{ list_attr.owner.email }})
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}
