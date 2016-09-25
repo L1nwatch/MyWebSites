@@ -10,6 +10,7 @@ from lists.models import Item, List
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.contrib.auth import get_user_model
+from django.views.generic import FormView
 
 __author__ = '__L1n__w@tch'
 
@@ -22,8 +23,12 @@ def share_list(request, list_id):
     return redirect(list_)
 
 
-def home_page(request):
-    return render(request, "home.html", {"form": ItemForm()})
+class HomePageView(FormView):
+    # 以下是原先使用视图函数时的代码
+    # def home_page(request):
+    #     return render(request, "home.html", {"form": ItemForm()})
+    template_name = "home.html"
+    form_class = ItemForm
 
 
 def view_list(request, list_id):
