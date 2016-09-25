@@ -10,7 +10,8 @@ from lists.models import Item, List
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.contrib.auth import get_user_model
-from django.views.generic import FormView
+from django.views.generic import FormView, CreateView
+from django.views.generic.detail import SingleObjectMixin
 
 __author__ = '__L1n__w@tch'
 
@@ -50,6 +51,15 @@ def view_list(request, list_id):
             # except ValidationError:
             #     error = "You can't have an empty list item"
     return render(request, "list.html", {"list_attr": list_, "form": form})
+
+
+class NewListView(CreateView):
+    template_name = "home.html"
+    form_class = NewListForm
+
+    def form_valid(self, form):
+        list_ = form.save(owner=self.request.user)
+        return redirect("/lists/{}/".format(list_.id))
 
 
 def new_list(request):
