@@ -12,4 +12,6 @@
 * `python manage.py test functional_tests`，这是运行功能测试
 * `python manage.py makemigrations` 迁移，包括这一条：`python manage.py migrate`
 * `python manage.py runserver`，跑起服务器
+* `fab deploy --host=watch@watch0.top:21`, 一样的自动化部署命令, 换了个形式而已
+* PS: 自动化部署过程中可能需要多次输入密码以便 sudo, 其实可以命令通过附带 sudo 密码这样就不会多次输入了
 
