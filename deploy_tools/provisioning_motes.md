@@ -23,6 +23,7 @@
 ## 文件夹结构：
 假设有用户账户，home 目录为 /home/username
 
+```
 /home/username
 	sites
 		SITENAME
@@ -30,3 +31,4 @@
 			source
 			static
 			virtualenv
+```
